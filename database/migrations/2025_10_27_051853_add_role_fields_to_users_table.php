@@ -18,7 +18,7 @@ return new class extends Migration
             
             $table->string('nomor_rt')->nullable()->after('role');
             $table->string('nama_kelurahan')->nullable()->after('nomor_rt');
-            $table->string('nomor_ktp', 20)->nullable()->unique()->after('alamat');
+            // $table->string('nomor_ktp', 20)->nullable()->unique()->after('alamat');
         });
     }
 
@@ -29,7 +29,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             // Ini untuk 'rollback' jika terjadi kesalahan
-            $table->dropColumn(['nomor_rt', 'nama_kelurahan', 'nomor_ktp']);
+            $table->dropColumn(['nomor_rt', 'nama_kelurahan']);
         });
     }
 };
