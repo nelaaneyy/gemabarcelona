@@ -38,6 +38,7 @@ class PengaduanController extends Controller
             'no_hp' => 'nullable|string|max:20', // Opsional
             'alamat_kejadian' => 'required|string',
             'tanggal_kejadian' => 'required|date', 
+            'is_urgent' => 'required|boolean',
         ]);
 
 
@@ -60,6 +61,7 @@ class PengaduanController extends Controller
             'no_hp' => $request->no_hp,
             'alamat_kejadian' => $request->alamat_kejadian,
             'tanggal_kejadian' => $request->tanggal_kejadian,
+            'is_urgent' => $request->is_urgent,
         ]);
 
         // 4. Redirect kembali ke dashboard warga dengan pesan sukses

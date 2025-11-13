@@ -3,6 +3,9 @@
 import { useEffect } from 'react';
 import InputError from '@/Components/InputError';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { Description, Field, Input, Label } from '@headlessui/react'
+import clsx from 'clsx'
+import { Button } from '@headlessui/react'
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -35,7 +38,7 @@ export default function Login({ status, canResetPassword }) {
                 <div className="absolute inset-0 bg-black opacity-30 z-0"></div>
 
                 {/* 3. Kotak Form (Responsif: w-full di mobile, max-w-md di desktop) */}
-                <div className="relative z-10 w-full max-w-md bg-green-800 bg-opacity-90 p-8 sm:p-10 rounded-2xl shadow-xl transition-all">
+                <div className="relative z-10 w-full max-w-md bg-green-800 bg-opacity-75 backdrop-blur-md p-8 sm:p-10 text-white border border-white/20 rounded-2xl shadow-xl transition-all">
                     
                     <h1 className="text-white text-3xl font-bold text-center tracking-wider mb-2">
                         GEMA
@@ -48,37 +51,42 @@ export default function Login({ status, canResetPassword }) {
 
                     <form onSubmit={submit} className="space-y-6">
                         {/* Input Email */}
-                        <div>
-                            <label htmlFor="email" className="sr-only">Email</label>
-                            <input
+                        <div className="w-full max-w-md px-4">
+                        <Field>
+                            <Label className="text-sm/6 font-medium text-white" htmlFor="email">Email</Label>
+                            <Input
                                 id="email"
                                 type="email"
                                 name="email"
                                 value={data.email}
                                 placeholder="Email address"
-                                className="mt-1 block w-full rounded-md border-none shadow-sm p-3 text-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+                                className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black','focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
                                 autoComplete="username"
                                 onChange={(e) => setData('email', e.target.value)}
                                 required
                             />
                             <InputError message={errors.email} className="mt-2 text-yellow-300" />
+                        </Field>    
                         </div>
 
                         {/* Input Password */}
-                        <div>
-                            <label htmlFor="password" className="sr-only">Password</label>
-                            <input
+                        <div className="w-full max-w-md px-4">
+                            <Field>
+                            <Label className="text-sm/6 font-medium text-white" htmlFor="password" >Password</Label>
+                            <Input
                                 id="password"
                                 type="password"
                                 name="password"
                                 value={data.password}
                                 placeholder="Password"
-                                className="mt-1 block w-full rounded-md border-none shadow-sm p-3 text-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
-                                autoComplete="current-password"
+                                className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black','focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
+                                autoComplete="current-password" 
                                 onChange={(e) => setData('password', e.target.value)}
                                 required
                             />
                             <InputError message={errors.password} className="mt-2 text-yellow-300" />
+                            </Field>
+                            
                         </div>
 
                         {/* Forgot Password Link */}
@@ -94,13 +102,14 @@ export default function Login({ status, canResetPassword }) {
                         </div>
 
                         {/* Tombol Masuk (Log In) */}
-                        <div>
-                            <button 
-                                className="w-full bg-blue-600 text-white p-3 rounded-md text-lg font-bold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-green-800 transition-all duration-200 ease-in-out transform hover:-translate-y-0.5 active:translate-y-0" 
+                        <div className="w-full max-w-md px-4">
+                            <Button 
+                                type="submit"
+                                className="w-full items-center gap-2 rounded-md bg-blue-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-blue-600 data-open:bg-blue-700 transition-all duration-200 ease-in-out transform hover:-translate-y-0.5 active:translate-y-0" 
                                 disabled={processing}
                             >
                                 Masuk
-                            </button>
+                            </Button>
                         </div>
 
                         {/* Link ke Halaman Register */}

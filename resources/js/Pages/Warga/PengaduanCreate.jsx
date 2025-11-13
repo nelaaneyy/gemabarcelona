@@ -1,3 +1,4 @@
+import MyToggle from '@/Components/MyToggle';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
@@ -5,6 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, useForm, Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { Switch } from '@headlessui/react';
 
 // --- Ikon Kamera ---
 const CameraIconMini = () => (
@@ -15,6 +17,7 @@ const CameraIconMini = () => (
 );
 
 export default function PengaduanCreate() {
+    const [isUrgent, setIsUrgent] = useState(false);
     const { auth } = usePage().props;
     const [photoPreview, setPhotoPreview] = useState(null);
 
@@ -26,6 +29,7 @@ export default function PengaduanCreate() {
         no_hp: '',
         alamat_kejadian: '',
         tanggal_kejadian: '',
+        is_urgent: false,
     });
 
     const submit = (e) => {
@@ -167,6 +171,31 @@ export default function PengaduanCreate() {
                                                 placeholder="Jelaskan detail laporan..."
                                             ></textarea>
                                             <InputError message={errors.isi_laporan} className="mt-1 text-xs" />
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                        <div>
+                                            <InputLabel htmlFor="is_urgent" value="Laporan Mendesak?" className="text-lg" />
+                                            <p className="text-sm text-gray-500">
+                                                Tandai jika ini adalah situasi darurat.
+                                            </p>
+                                        </div>
+                                        <Switch
+                                            checked={data.is_urgent} // Ambil nilai dari 'useForm'
+                                            onChange={(value) => setData('is_urgent', value)} // Set nilai ke 'useForm'
+                                            
+                                            // Ini adalah styling Tailwind untuk komponen Headless UI
+                                            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2
+                                                ${data.is_urgent ? 'bg-green-600' : 'bg-gray-200'}
+                                            `}
+                                        >
+                                            <span className="sr-only">Laporan Mendesak</span>
+                                            <span
+                                                aria-hidden="true"
+                                                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out
+                                                    ${data.is_urgent ? 'translate-x-5' : 'translate-x-0'}
+                                                `}
+                                            />
+                                        </Switch>
                                         </div>
                                     </div>
                                 </div>

@@ -15,6 +15,12 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                'gema-green': {
+                    '800': '#166534', // Sesuaikan kode hex ini dengan warna hijau di desainmu
+                    // ... bisa tambah varian lain
+                }
+            },
             // --- TAMBAHKAN KEYFRAMES DI SINI ---
             keyframes: {
                 'pop-in': {

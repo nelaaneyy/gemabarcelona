@@ -9,6 +9,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PengaduanController;
 use App\Http\Controllers\Rt\PengaduanController as RtPengaduanController;
+use App\Http\Controllers\Lurah\PengaduanController as LurahPengaduanController;
 use Inertia\Inertia;
 
 
@@ -60,6 +61,11 @@ Route::get('/verify-email', [EmailVerificationPromptController::class, '__invoke
     
     Route::middleware('role:lurah')->prefix('lurah')->name('lurah.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'lurah'])->name('dashboard');
+
+        Route::middleware('role:lurah')->prefix('lurah')->name('lurah.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'lurah'])->name('dashboard');
+        Route::get('/pengaduan/{pengaduan}', [LurahPengaduanController::class, 'show'])->name('pengaduan.show');
+    });
     });
 });
 });

@@ -7,7 +7,6 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-
 export default function AuthenticatedLayout({ header, children }) {
     // Mengambil user dari usePage() (Bawaan Breeze)
     const user = usePage().props.auth.user;
@@ -21,12 +20,18 @@ export default function AuthenticatedLayout({ header, children }) {
             <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.017 5.454 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
         </svg>
     );
+    const UserProfileIcon = () => (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+    </svg>
+
+    );
     // --- Batas SVG Ikon ---
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-200">
             {/* --- Navbar Hijau Tua (dari desain baru) --- */}
-            <nav className="bg-green-800 dark:bg-green-900 border-b border-green-700 dark:border-green-800">
+            <nav className="bg-green-800 backdrop-blur-md text-white border border-white/20 shadow-xl">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Ini adalah div yang error (sekarang sudah diperbaiki) */}
                     <div className="flex justify-between h-16">
@@ -81,6 +86,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     <Dropdown.Content>
                                         <Dropdown.Link href={route('profile.edit')}>
                                             Profile
+                                            <UserProfileIcon/>
                                         </Dropdown.Link>
                                         <Dropdown.Link
                                             href={route('logout')}

@@ -24,11 +24,16 @@ class Pengaduan extends Model
         'no_hp',
         'alamat_kejadian',
         'tanggal_kejadian',
+        'is_urgent',
         // 'user_id' atau 'warga_id' TIDAK PERLU di sini
         // karena kita mengisinya via relasi Auth::user()->pengaduans()
     ];
     // --- BATAS TAMBAHAN ---
 
+    protected $casts = [
+        'tanggal_kejadian' => 'datetime',
+        'is_urgent' => 'boolean', // <-- (Opsional) Tambahkan ini agar Laravel tahu ini boolean
+    ];
 
     // --- PASTIKAN RELASI KE USER ADA ---
     /**

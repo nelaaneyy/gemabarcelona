@@ -56,7 +56,7 @@ const GreenButton = ({ href, children, active = false }) => (
         className={`px-4 py-2 text-sm font-medium rounded-md transition-colors
             ${active
                 ? 'bg-green-800 text-white shadow-sm'
-                : 'bg-white text-green-800 border border-green-800 hover:bg-green-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600'
+                : 'bg-white text-green-800 border border-green-800 hover:bg-green-50 dark:bg-green-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600'
             }
         `}
     >

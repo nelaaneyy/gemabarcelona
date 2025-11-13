@@ -1,6 +1,6 @@
 // resources/js/Pages/Rt/DashboardRt.jsx
 
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, usePage } from '@inertiajs/react';
 
 // --- Komponen Kartu Laporan (Mirip Warga, tapi mungkin nanti ada tombol aksi beda) ---
@@ -70,7 +70,7 @@ export default function DashboardRt() {
     const { auth, pengaduans } = usePage().props;
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AdminLayout user={auth.user}>
             <Head title="Dashboard RT" />
 
             {/* Background abu-abu muda */}
@@ -107,6 +107,6 @@ export default function DashboardRt() {
 
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </AdminLayout>
     );
 }

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia; 
 use Inertia\Response; 
 use App\Models\Pengaduan;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -62,10 +63,27 @@ class DashboardController extends Controller
      */
     public function lurah(): Response
     {
-        // Nanti kita isi logikanya
-        return Inertia::render('Lurah/Dashboard', [
-            // --- TAMBAHKAN BARIS INI ---
-             'auth' => [
+        // 1. Ambil Statistik Ringkasan (sesuai desain Figma)
+        $stats = Pengaduan::query()
+            ->select(DB::raw('count(*) as total')) // "Total Laporan"
+            // "Dalam Perbaikan" = DIPROSES_RT
+            ->selectRaw("count(case when status = 'DIPROSES_RT' then 1 end) as diproses") 
+            ->selectRaw("count(case when status = 'DITERUSKAN_LURAH' then 1 end) as diteruskan") // "Diteruskan ke kelurahan"
+            ->selectRaw("count(case when status = 'SELESAI' then 1 end) as selesai")
+            ->selectRaw("count(case when status = 'DITOLAK' then 1 end) as ditolak")
+            ->first(); // Ambil 1 baris hasil perhitungan
+
+        // 2. Ambil Daftar Laporan (kita ambil 5 terbaru untuk dashboard)
+        // Ganti dari 'laporanPenting' menjadi 'laporans'
+        $laporans = Pengaduan::with('user:id,name,nomor_rt') // Ambil info pelapor
+            ->latest() // Urutkan dari terbaru
+            ->paginate(5); // Ambil 5 laporan per halaman (untuk tabel)
+
+        // 3. Render halaman 'Lurah/DashboardLurah.jsx'
+        return Inertia::render('Lurah/DashboardLurah', [ // <-- Ganti nama file view
+            'stats' => $stats,
+            'laporans' => $laporans, // Kirim data laporan (ter-paginate)
+            'auth' => [ // Mengirim auth manual (sesuai preferensimu)
                 'user' => Auth::user(),
             ],
         ]);

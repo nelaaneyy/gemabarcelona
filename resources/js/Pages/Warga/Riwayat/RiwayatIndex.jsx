@@ -23,7 +23,7 @@ export default function RiwayatIndex() {
                                 Riwayat Laporan Anda
                             </h1>
                             <p className="mt-1 text-sm text-gray-600">
-                                Pantau status semua laporan yang pernah Anda buat.
+                                Pantau status semua laporan Infrastruktur yang pernah Anda buat.
                             </p>
                         </div>
                         {/* Tombol kembali ke Dashboard (Opsional) */}
