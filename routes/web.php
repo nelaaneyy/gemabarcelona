@@ -40,7 +40,7 @@ Route::get('/verify-email', [EmailVerificationPromptController::class, '__invoke
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::middleware(['verified'])->group(function () {
-    
+
 
     Route::middleware('role:warga')->prefix('warga')->name('warga.')->group(function(){
         Route::get('/dashboard',[DashboardController::class, 'warga'])->name('dashboard');
@@ -53,14 +53,11 @@ Route::get('/verify-email', [EmailVerificationPromptController::class, '__invoke
     });
 
     Route::middleware('role:rt')->prefix('rt')->name('rt.')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'rt'])->name('dashboard'); 
+        Route::get('/dashboard', [DashboardController::class, 'rt'])->name('dashboard');
 
         Route::get('/pengaduan/{pengaduan}', [RtPengaduanController::class, 'show'])->name('pengaduan.show');
         Route::patch('/pengaduan/{pengaduan}/status', [RtPengaduanController::class, 'updateStatus'])->name('pengaduan.updateStatus');
     });
-    
-    Route::middleware('role:lurah')->prefix('lurah')->name('lurah.')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'lurah'])->name('dashboard');
 
         Route::middleware('role:lurah')->prefix('lurah')->name('lurah.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'lurah'])->name('dashboard');
@@ -68,7 +65,4 @@ Route::get('/verify-email', [EmailVerificationPromptController::class, '__invoke
     });
     });
 });
-});
-
-
 require __DIR__.'/auth.php';
