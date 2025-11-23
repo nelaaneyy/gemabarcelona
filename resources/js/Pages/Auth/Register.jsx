@@ -1,4 +1,4 @@
-// resources/js/Pages/Auth/Register.jsx
+// resources/js/Pages/Auth/Register.jsx (Kode Siap Copas)
 
 import { useEffect } from 'react';
 import InputError from '@/Components/InputError';
@@ -14,7 +14,7 @@ export default function Register() {
         email: '',
         password: '',
         password_confirmation: '',
-        role: '', 
+        role: '', // State awal adalah string kosong
         nomor_ktp: '',
         alamat: '',
         nomor_rt: '',
@@ -38,19 +38,19 @@ export default function Register() {
     return (
         <>
             <Head title="Daftar" />
-            
+
             {/* 1. Container Utama */}
-            <div 
+            <div
                 // Kita pakai `py-12` agar ada scroll jika form-nya terlalu panjang di HP
                 className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-cover bg-center"
-                style={{ backgroundImage: "url('/image/barcelona1.png')" }} 
+                style={{ backgroundImage: "url('/image/barcelona1.png')" }}
             >
                 {/* 2. Overlay Gelap */}
                 <div className="absolute inset-0 bg-black opacity-30 z-0"></div>
 
                 {/* 3. Kotak Form (Responsif) */}
                 <div className="relative z-10 w-full max-w-md bg-green-800 bg-opacity-75 backdrop-blur-md p-8 sm:p-10 text-white border border-white/20 rounded-2xl shadow-xl transition-all">
-                    
+
                     <h1 className="text-white text-3xl font-bold text-center tracking-wider mb-2">
                         GEMA
                     </h1>
@@ -60,61 +60,63 @@ export default function Register() {
 
                     <form onSubmit={submit} className="space-y-6">
                         {/* --- FIELD UTAMA --- */}
-                        
+
                         <div className="w-full max-w-md px-4">
                             <Field>
-                            <Label htmlFor="name" className="text-sm/6 font-medium text-white">Nama Lengkap</Label>
-                            <Input
-                                id="name"
-                                placeholder="Nama Lengkap"
-                                value={data.name}
-                                className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black','focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
-                                onChange={(e) => setData('name', e.target.value)}
-                                required
-                                autoFocus
-                            />
-                            <InputError message={errors.name} className="mt-2 text-yellow-300" />  
+                                <Label htmlFor="name" className="text-sm/6 font-medium text-white">Nama Lengkap</Label>
+                                <Input
+                                    id="name"
+                                    placeholder="Nama Lengkap"
+                                    value={data.name}
+                                    className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black', 'focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
+                                    onChange={(e) => setData('name', e.target.value)}
+                                    required
+                                    autoFocus
+                                />
+                                <InputError message={errors.name} className="mt-2 text-yellow-300" />
                             </Field>
-                            
+
                         </div>
 
                         <div className="w-full max-w-md px-4">
                             <Field>
                                 <Label htmlFor="email" className="text-sm/6 font-medium text-white">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="Email address"
-                                value={data.email}
-                                className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black','focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
-                                onChange={(e) => setData('email', e.target.value)}
-                                required
-                            />
-                            <InputError message={errors.email} className="mt-2 text-yellow-300" />
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="Email address"
+                                    value={data.email}
+                                    className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black', 'focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
+                                    onChange={(e) => setData('email', e.target.value)}
+                                    required
+                                />
+                                <InputError message={errors.email} className="mt-2 text-yellow-300" />
                             </Field>
-                            
+
                         </div>
 
-                        {/* --- PILIHAN ROLE --- */}
+                        {/* --- PILIHAN ROLE (KOREKSI DI SINI) --- */}
                         <div className="w-full max-w-md px-4">
                             <Field>
                                 <Label htmlFor="role" className="text-sm/6 font-medium text-white">Daftar Sebagai</Label>
-                            <select
-                                id="role"
-                                value={data.role}
-                                // Kita gunakan style yang sama, tapi text-gray-800 agar terlihat
-                                className={`${clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black','focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')} text-gray-800`}
-                                onChange={(e) => setData('role', e.target.value)}
-                                required
-                            >
-                                <option value="daftar sebagai"></option>
-                                <option value="warga">Warga</option>
-                                <option value="rt">RT</option>
-                                <option value="lurah">Lurah</option>
-                            </select>
-                            <InputError message={errors.role} className="mt-2 text-yellow-300" />
+                                <select
+                                    id="role"
+                                    value={data.role}
+                                    // Kita gunakan style yang sama, tapi text-gray-800 agar terlihat
+                                    className={`${clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black', 'focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')} text-gray-800`}
+                                    onChange={(e) => setData('role', e.target.value)}
+                                    required
+                                >
+                                    {/* KOREKSI: Gunakan value="" agar cocok dengan state awal '' */}
+                                    <option value="">---Pilih Role---</option>
+                                    <option value="warga">Warga</option>
+                                    <option value="rt">RT</option>
+                                    <option value="lurah">Lurah</option>
+                                </select>
+                                {/* InputError untuk role */}
+                                <InputError message={errors.role} className="mt-2 text-yellow-300" />
                             </Field>
-                            
+
                         </div>
 
                         {/* --- FIELD KONDISIONAL (WARGA) --- */}
@@ -126,20 +128,20 @@ export default function Register() {
                                         id="nomor_ktp"
                                         placeholder="Nomor KTP (16 digit)"
                                         value={data.nomor_ktp}
-                                        className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black','focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
+                                        className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black', 'focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
                                         onChange={(e) => setData('nomor_ktp', e.target.value)}
                                         required
                                     />
                                     <InputError message={errors.nomor_ktp} className="mt-2 text-yellow-300" />
                                 </div>
-                                
+
                                 <div className="w-full max-w-md px-4">
                                     <label htmlFor="alamat" className="text-sm/6 font-medium text-white">Alamat Lengkap</label>
                                     <textarea
                                         id="alamat"
                                         placeholder="Alamat Lengkap"
                                         value={data.alamat}
-                                        className={`${clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black','focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')} h-24`} // Buat lebih tinggi
+                                        className={`${clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black', 'focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')} h-24`} // Buat lebih tinggi
                                         onChange={(e) => setData('alamat', e.target.value)}
                                         required
                                     />
@@ -152,7 +154,7 @@ export default function Register() {
                                         id="nomor_rt"
                                         placeholder="Nomor RT (Contoh: 031)"
                                         value={data.nomor_rt}
-                                        className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black','focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
+                                        className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black', 'focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
                                         onChange={(e) => setData('nomor_rt', e.target.value)}
                                         required
                                     />
@@ -169,7 +171,7 @@ export default function Register() {
                                     id="nomor_rt"
                                     placeholder="Nomor RT (Contoh: 031)"
                                     value={data.nomor_rt}
-                                    className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black','focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
+                                    className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black', 'focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
                                     onChange={(e) => setData('nomor_rt', e.target.value)}
                                     required
                                 />
@@ -185,7 +187,7 @@ export default function Register() {
                                     id="nama_kelurahan"
                                     placeholder="Nama Kelurahan"
                                     value={data.nama_kelurahan}
-                                    className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black','focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
+                                    className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black', 'focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
                                     onChange={(e) => setData('nama_kelurahan', e.target.value)}
                                     required
                                 />
@@ -201,7 +203,7 @@ export default function Register() {
                                 type="password"
                                 placeholder="Password"
                                 value={data.password}
-                                className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black','focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
+                                className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black', 'focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
                                 onChange={(e) => setData('password', e.target.value)}
                                 required
                             />
@@ -215,7 +217,7 @@ export default function Register() {
                                 type="password"
                                 placeholder="Konfirmasi Password"
                                 value={data.password_confirmation}
-                                className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black','focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
+                                className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black', 'focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
                                 onChange={(e) => setData('password_confirmation', e.target.value)}
                                 required
                             />
@@ -224,9 +226,9 @@ export default function Register() {
 
                         {/* --- TOMBOL SUBMIT --- */}
                         <div className="w-full max-w-md px-4">
-                            <button 
+                            <button
                                 type="submit"
-                                className="w-full bg-blue-600 text-white p-3 rounded-md text-lg font-bold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-green-800 transition-all duration-200 ease-in-out transform hover:-translate-y-0.5 active:translate-y-0" 
+                                className="w-full bg-blue-600 text-white p-3 rounded-md text-lg font-bold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-green-800 transition-all duration-200 ease-in-out transform hover:-translate-y-0.5 active:translate-y-0"
                                 disabled={processing}
                             >
                                 Daftar

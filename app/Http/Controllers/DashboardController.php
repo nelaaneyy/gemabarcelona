@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; 
-use Inertia\Inertia; 
-use Inertia\Response; 
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+use Inertia\Response;
 use App\Models\Pengaduan;
 use Illuminate\Support\Facades\DB;
 
@@ -34,28 +34,26 @@ class DashboardController extends Controller
      */
     public function rt(): Response
     {
-        $nomor_rt_user = Auth::user()->nomor_rt;
+    // Ambil nomor RT dari user yang sedang login
+    $rtUser = Auth::user();
+    $nomor_rt_user = $rtUser->nomor_rt;
 
-        // 2. Ambil pengaduan dari warga di RT yang sama
-        $pengaduans = Pengaduan::whereHas('user', function ($query) use ($nomor_rt_user) {
-            $query->where('role', 'warga')
-                  ->where('nomor_rt', $nomor_rt_user);
-        })
-        ->with('user:id,name') // <-- Pindahkan ->with, ->latest, ->get ke sini
-        ->latest()
-        ->get();
-        // --- BATAS PEMINDAHAN ---
+    // Gunakan paginate() untuk konsisten dengan struktur frontend
+    $pengaduans = Pengaduan::whereHas('user', function ($query) use ($nomor_rt_user) {
+        $query->where('role', 'warga')
+              ->where('nomor_rt', $nomor_rt_user);
+    })
+    ->with('user:id,name,nomor_rt')
+    ->latest()
+    ->paginate(10); // <<< KEMBALI KE PAGINATION >>>
 
-        // 3. Render view dan kirim HANYA data yang sudah siap
-        return Inertia::render('Rt/DashboardRt', [
-            // Kirim data pengaduans yang sudah diambil
-            'pengaduans' => $pengaduans,
-
-            // Kirim data auth manual (sesuai keinginanmu)
-            'auth' => [
-                'user' => Auth::user(),
-            ],
-        ]);
+    return Inertia::render('Rt/DashboardRt', [
+        'pengaduans' => $pengaduans,
+        'auth' => [
+            'user' => $rtUser,
+        ],
+    ]);
+    
     }
 
     /**
@@ -63,28 +61,51 @@ class DashboardController extends Controller
      */
     public function lurah(): Response
     {
-        // 1. Ambil Statistik Ringkasan (sesuai desain Figma)
-        $stats = Pengaduan::query()
-            ->select(DB::raw('count(*) as total')) // "Total Laporan"
+        $lurahUser = Auth::user();
+
+        // Asumsi: Lurah melihat SEMUA laporan, tetapi fokus utamanya adalah yang diteruskan.
+        // Jika Lurah hanya melihat kelurahannya, Anda perlu menambahkan filter berdasarkan $lurahUser->nama_kelurahan.
+
+        // --- 1. Ambil Statistik Ringkasan (Fokus pada semua laporan di sistem atau di wilayah Lurah) ---
+        $statsQuery = Pengaduan::query();
+
+        // Jika Lurah terikat pada suatu kelurahan, tambahkan filter di sini:
+        if ($lurahUser->nama_kelurahan) {
+            $statsQuery->whereHas('user', function($q) use ($lurahUser) {
+                $q->where('nama_kelurahan', $lurahUser->nama_kelurahan);
+            });
+        }
+
+        $stats = $statsQuery->select(DB::raw('count(*) as total'))
             // "Dalam Perbaikan" = DIPROSES_RT
-            ->selectRaw("count(case when status = 'DIPROSES_RT' then 1 end) as diproses") 
-            ->selectRaw("count(case when status = 'DITERUSKAN_LURAH' then 1 end) as diteruskan") // "Diteruskan ke kelurahan"
+            ->selectRaw("count(case when status = 'DIPROSES_RT' then 1 end) as diproses")
+            // "Diteruskan ke kelurahan" = DITERUSKAN_LURAH (Fokus Utama Lurah)
+            ->selectRaw("count(case when status = 'DITERUSKAN_LURAH' then 1 end) as diteruskan")
             ->selectRaw("count(case when status = 'SELESAI' then 1 end) as selesai")
             ->selectRaw("count(case when status = 'DITOLAK' then 1 end) as ditolak")
-            ->first(); // Ambil 1 baris hasil perhitungan
+            ->first();
 
-        // 2. Ambil Daftar Laporan (kita ambil 5 terbaru untuk dashboard)
-        // Ganti dari 'laporanPenting' menjadi 'laporans'
-        $laporans = Pengaduan::with('user:id,name,nomor_rt') // Ambil info pelapor
+        // --- 2. Ambil Daftar Laporan (Fokus hanya pada yang 'DITERUSKAN_LURAH') ---
+        $laporansQuery = Pengaduan::where('status', 'DITERUSKAN_LURAH'); // Filter HANYA laporan eskalasi
+
+        // Jika ada filter kelurahan, terapkan di sini juga
+        if ($lurahUser->nama_kelurahan) {
+            $laporansQuery->whereHas('user', function($q) use ($lurahUser) {
+                $q->where('nama_kelurahan', $lurahUser->nama_kelurahan);
+            });
+        }
+
+        $laporans = $laporansQuery
+            ->with('user:id,name,nomor_rt') // Ambil info pelapor
             ->latest() // Urutkan dari terbaru
-            ->paginate(5); // Ambil 5 laporan per halaman (untuk tabel)
+            ->paginate(5); // Ambil 5 laporan per halaman
 
-        // 3. Render halaman 'Lurah/DashboardLurah.jsx'
-        return Inertia::render('Lurah/DashboardLurah', [ // <-- Ganti nama file view
+        // --- 3. Render halaman 'Lurah/DashboardLurah.jsx' ---
+        return Inertia::render('Lurah/DashboardLurah', [
             'stats' => $stats,
-            'laporans' => $laporans, // Kirim data laporan (ter-paginate)
-            'auth' => [ // Mengirim auth manual (sesuai preferensimu)
-                'user' => Auth::user(),
+            'laporans' => $laporans,
+            'auth' => [
+                'user' => $lurahUser, // Kirim Auth::user() secara manual
             ],
         ]);
     }

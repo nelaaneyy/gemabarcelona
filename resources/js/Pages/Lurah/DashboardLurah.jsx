@@ -1,5 +1,6 @@
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
+import { useState } from 'react'; // Diperlukan untuk komponen-komponen yang lebih kompleks
 
 // --- Komponen Kartu Statistik (sesuai desain Figma) ---
 const StatCard = ({ label, value, colorClass = 'bg-green-100 text-green-800' }) => (
@@ -17,7 +18,7 @@ const StatusBadge = ({ status }) => {
     if (status === 'DITERUSKAN_LURAH') colorClass = 'bg-purple-100 text-purple-800';
     if (status === 'SELESAI') colorClass = 'bg-green-100 text-green-800';
     if (status === 'DITOLAK') colorClass = 'bg-red-100 text-red-800';
-    
+
     return (
         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${colorClass}`}>
             {status.replace('_', ' ')}
@@ -25,45 +26,35 @@ const StatusBadge = ({ status }) => {
     );
 };
 
-export default function DashboardLurah({ auth, stats, laporans }) { 
-    // Terima props 'auth', 'stats', dan 'laporans'
-    // 'laporans' adalah objek paginasi, jadi kita perlu '.data' untuk list-nya
+export default function DashboardLurah({ auth, stats, laporans }) {
+
+    // Asumsi: 'laporans' adalah objek paginasi dengan key 'data'
+    const laporanList = laporans.data;
+    const lurahName = auth.user.name;
 
     return (
-        <AdminLayout user={auth.user}> {/* Pastikan kirim user ke layout */}
+        <AdminLayout user={auth.user}>
             <Head title="Beranda Lurah" />
 
-            {/* Area Konten Utama (di dalam AdminLayout) */}
-            <div className="p-6 sm:p-8 lg:p-12"> 
-                
-                {/* Header "Beranda" */}
-                {/* Desain Figma punya header hijau "Laporan...", tapi kita ikuti layout AdminLayout */}
-                <h1 className="text-3xl font-bold text-gray-900 mb-6">Beranda</h1>
+            <div className="p-6 sm:p-8 lg:p-12">
 
-                {/* Section "Ringkasan" */}
-                <h2 className="text-xl font-semibold text-gray-800 mb-3">Ringkasan</h2>
+                {/* Header Beranda */}
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Selamat Datang, Lurah {lurahName}</h1>
+                <p className="text-gray-600 mb-6">Ringkasan dan antrian laporan yang diteruskan dari RT.</p>
+
+                {/* Section "Ringkasan Statistik" */}
+                <h2 className="text-xl font-semibold text-gray-800 mb-3">Ringkasan Laporan Sistem</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                    {/* Statistik yang diambil dari DB::raw() */}
                     <StatCard label="Total Laporan" value={stats.total} colorClass="bg-blue-100 text-blue-800" />
                     <StatCard label="Dalam Perbaikan" value={stats.diproses} colorClass="bg-yellow-100 text-yellow-800" />
-                    <StatCard label="Diteruskan" value={stats.diteruskan} colorClass="bg-purple-100 text-purple-800" />
+                    <StatCard label="Diteruskan (Antrian)" value={stats.diteruskan} colorClass="bg-purple-100 text-purple-800" />
                     <StatCard label="Selesai" value={stats.selesai} colorClass="bg-green-100 text-green-800" />
                     <StatCard label="Ditolak" value={stats.ditolak} colorClass="bg-red-100 text-red-800" />
                 </div>
 
-                {/* Section "Daftar Laporan dari RT" */}
-                <h2 className="text-xl font-semibold text-gray-800 mb-3">Daftar Laporan Terbaru</h2>
-                
-                {/* Filter (UI saja, belum fungsional) */}
-                <div className="flex justify-end space-x-2 mb-4">
-                    <select className="border-gray-300 rounded-md shadow-sm text-sm focus:ring-green-500 focus:border-green-500">
-                        <option>Pilih Kategori</option>
-                        {/* Nanti bisa diisi dinamis */}
-                    </select>
-                    <select className="border-gray-300 rounded-md shadow-sm text-sm focus:ring-green-500 focus:border-green-500">
-                        <option>Pilih Status</option>
-                        {/* Nanti bisa diisi dinamis */}
-                    </select>
-                </div>
+                {/* Section "Antrian Laporan Eskalasi" */}
+                <h2 className="text-xl font-semibold text-gray-800 mb-3">Antrian Laporan Eskalasi (Status: DITERUSKAN LURAH)</h2>
 
                 {/* Tabel Laporan */}
                 <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -72,17 +63,17 @@ export default function DashboardLurah({ auth, stats, laporans }) {
                             <tr>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pelapor (RT)</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori/Judul</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul Laporan</th>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                 <th scope="col" className="relative px-6 py-3"><span className="sr-only">Detail</span></th>
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {laporans.data.map((laporan) => (
+                            {laporanList.map((laporan) => (
                                 <tr key={laporan.id}>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                         {/* Format tanggal jadi 10/03/2025 */}
-                                        {new Date(laporan.created_at).toLocaleDateString('id-ID')} 
+                                        {new Date(laporan.created_at).toLocaleDateString('id-ID')}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                         {laporan.user?.name ?? 'Warga'} (RT {laporan.user?.nomor_rt ?? 'N/A'})
@@ -94,35 +85,42 @@ export default function DashboardLurah({ auth, stats, laporans }) {
                                         <StatusBadge status={laporan.status} />
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <Link 
-                                            // href={route('lurah.pengaduan.show', laporan.id)} 
+                                        <Link
+                                            href={route('lurah.pengaduan.show', laporan.id)} // PENTING: Gunakan rute Lurah
                                             className="text-white bg-green-700 hover:bg-green-800 px-3 py-1 rounded-md text-xs"
                                         >
-                                            Detail Laporan
+                                            Lihat Detail
                                         </Link>
                                     </td>
                                 </tr>
                             ))}
-                            {laporans.data.length === 0 && (
+                            {laporanList.length === 0 && (
                                 <tr>
-                                    <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
-                                        Tidak ada data laporan untuk ditampilkan.
+                                    <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                                        Tidak ada laporan yang diteruskan dari RT saat ini.
                                     </td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
                 </div>
-                
-                {/* Tombol "Lihat Selengkapnya" */}
-                <div className="mt-6 text-center">
-                    <Link 
-                        href="#" // TODO: Buat route lurah.laporan.index (halaman semua laporan)
-                        className="px-5 py-2 bg-green-800 text-white text-sm font-semibold rounded-md shadow-sm hover:bg-green-700"
-                    >
-                        Lihat Selengkapnya
-                    </Link>
-                </div>
+
+                {/* Pagination (menggunakan laporans.links dari objek paginasi) */}
+                {laporans.links && laporans.links.length > 3 && (
+                    <div className="mt-6 flex justify-center">
+                        {laporans.links.map((link, index) => (
+                            <button
+                                key={index}
+                                dangerouslySetInnerHTML={{ __html: link.label }}
+                                onClick={() => link.url && router.get(link.url, {}, { preserveScroll: true })}
+                                disabled={!link.url}
+                                className={`mx-1 px-3 py-1 text-sm rounded-lg transition-colors
+                                    ${link.active ? 'bg-indigo-600 text-white font-bold' : 'bg-white text-gray-700 hover:bg-gray-200 border border-gray-300'}
+                                    ${!link.url && 'opacity-50 cursor-not-allowed'}`}
+                            />
+                        ))}
+                    </div>
+                )}
 
             </div>
         </AdminLayout>

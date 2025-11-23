@@ -36,6 +36,10 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'in:warga,rt,lurah'],
+            'nomor_ktp' => ['nullable', 'string', 'size:16', 'unique:users,nomor_ktp'],
+            'alamat' => ['nullable', 'string', 'max:500'],
+            'nama_kelurahan' => ['nullable', 'string', 'max:255'],
+            'nomor_rt' => ['nullable', 'string', 'max:10'],
         ];
 
         // Add conditional validation based on role
@@ -46,6 +50,7 @@ class RegisteredUserController extends Controller
         } elseif ($request->role === 'warga') {
             $rules['alamat'] = ['required', 'string', 'max:500'];
             $rules['nomor_ktp'] = ['required', 'string', 'size:16', 'unique:users,nomor_ktp'];
+            $rules['nomor_rt'] = ['required', 'string', 'max:10'];
         }
 
         $validated = $request->validate($rules);

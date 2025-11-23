@@ -13,38 +13,45 @@ use Illuminate\Validation\Rule;
 
 class PengaduanController extends Controller
 {
-    public function show(Pengaduan $pengaduan): Response
+    /**
+     * Menampilkan detail satu laporan (pengaduan) milik RT.
+     */
+    public function show(Pengaduan $laporan): Response
     {
         // --- AUTHORIZATION: Pastikan laporan ini dari warga di wilayah RT ---
-        $rtUser = Auth::user(); // User RT yang sedang login
-        
-        // Ambil data pengaduan beserta data user pembuatnya (warga)
-        $pengaduan->load('user:id,name,nomor_rt'); // Load relasi user
+        $rtUser = Auth::user();
+
+        // Ambil data laporan beserta user pembuatnya dan relasi tanggapan
+        // Memuat user: untuk otorisasi RT
+        // Memuat tanggapans.user: untuk menampilkan siapa (RT mana) yang memberi tanggapan
+        $laporan->load(['user:id,name,nomor_rt', 'tanggapans.user:id,nomor_rt']);
 
         // Cek apakah nomor RT warga pembuat laporan SAMA dengan nomor RT user RT
-        if (!$pengaduan->user || $pengaduan->user->nomor_rt !== $rtUser->nomor_rt) {
-            abort(403, 'Anda tidak berhak mengakses laporan ini.'); // Tolak akses jika tidak cocok
+        if (!$laporan->user || $laporan->user->nomor_rt !== $rtUser->nomor_rt) {
+            abort(403, 'Anda tidak berhak mengakses laporan ini.');
         }
         // --- BATAS AUTHORIZATION ---
 
-        // Render halaman React 'Rt/PengaduanShowRt.jsx'
-        // Kirim data 'pengaduan' yang spesifik ini ke frontend
+        // Render halaman frontend
         return Inertia::render('Rt/PengaduanShowRt', [
-            'pengaduan' => $pengaduan ,
+            'pengaduan' => $laporan, // Mengirim data sebagai 'pengaduan' ke frontend
+            'tanggapans' => $laporan->tanggapans, // Mengirimkan relasi tanggapan
             'auth' => [
                 'user' => Auth::user(),
             ],
-            // 'auth' dikirim otomatis oleh middleware
         ]);
     }
 
-    public function updateStatus(Request $request, Pengaduan $pengaduan): RedirectResponse
+    /**
+     * Menangani pembaruan status laporan (dipicu oleh rute PATCH).
+     */
+    public function updateStatus(Request $request, Pengaduan $laporan): RedirectResponse
     {
-        // 1. Authorization (Sama seperti di show, pastikan RT berhak)
+        // 1. Authorization
         $rtUser = Auth::user();
-        
-        // Cek dulu relasi user sebelum akses propertynya
-        if (!$pengaduan->user || $pengaduan->user->nomor_rt !== $rtUser->nomor_rt) {
+        $laporan->load('user:id,nomor_rt');
+
+        if (!$laporan->user || $laporan->user->nomor_rt !== $rtUser->nomor_rt) {
              abort(403, 'Anda tidak berhak mengubah status laporan ini.');
         }
 
@@ -58,11 +65,9 @@ class PengaduanController extends Controller
         ]);
 
         // 3. Update Status di Database
-        $pengaduan->update(['status' => $validated['status']]);
+        $laporan->update(['status' => $validated['status']]);
 
-        // 4. Redirect kembali ke halaman detail dengan pesan sukses
-        // Kita gunakan 'back()' agar kembali ke halaman detail sebelumnya
-        return back()->with('success', 'Status laporan berhasil diperbarui!');
-        
+        // 4. Redirect ke rute detail laporan yang baru (rt.laporan.show)
+        return redirect()->route('rt.laporan.show', $laporan)->with('success', 'Status laporan berhasil diperbarui!');
     }
 }

@@ -43,6 +43,12 @@ class Pengaduan extends Model
     {
         // Ganti User::class jika model wargamu bukan User
         // Ganti 'user_id' jika foreign key-nya beda
-        return $this->belongsTo(User::class, 'user_id'); 
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function tanggapans()
+    {
+        // Pastikan nama Model-nya benar (Tanggapan::class)
+        return $this->hasMany(Tanggapan::class);
     }
 }
