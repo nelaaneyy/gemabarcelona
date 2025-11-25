@@ -73,9 +73,6 @@ export default function AdminLayout({ children }) {
                             <SidebarNavLink href="#" active={false} icon={DocumentTextIcon}>
                                 Data Laporan
                             </SidebarNavLink>
-                            <SidebarNavLink href="#" active={false} icon={DocumentTextIcon}>
-                                Rekapitulasi
-                            </SidebarNavLink>
                             <SidebarNavLink href={route('profile.edit')} active={route().current('profile.edit')} icon={UserIcon}>
                                 Profil
                             </SidebarNavLink>
@@ -105,9 +102,6 @@ export default function AdminLayout({ children }) {
                                 </SidebarNavLink>
                                 <SidebarNavLink href="#" active={false} icon={DocumentTextIcon}>
                                     Data Laporan
-                                </SidebarNavLink>
-                                <SidebarNavLink href="#" active={false} icon={DocumentTextIcon}>
-                                    Rekapitulasi
                                 </SidebarNavLink>
                                 <SidebarNavLink href={route('profile.edit')} active={route().current('profile.edit')} icon={UserIcon}>
                                     Profil

@@ -42,7 +42,7 @@ const LaporanCard = ({ laporan }) => {
                         href={route('warga.pengaduan.show', laporan.id)}
                         className="px-4 py-2 bg-green-700 text-white text-sm font-medium rounded-md hover:bg-green-600 transition-colors shadow-sm"
                     >
-                        Lihat
+                        Lihat detail
                     </Link>
                 </div>
             </div>
@@ -88,17 +88,17 @@ export default function DashboardWarga() {
                     </h1>
                     <hr className="my-4 border-gray-300 dark:border-gray-700" />
 
-                    
+
                     <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
                         <h2 className="text-2xl font-semibold text-gray-800">
                             Ayo laporkan!!
                         </h2>
                         <div className="flex space-x-2">
-                            <GreenButton 
+                            <GreenButton
                             href={route('warga.pengaduan.create')}>
                                 Buat Laporan
                             </GreenButton>
-                            <GreenButton href={route('warga.riwayat')} 
+                            <GreenButton href={route('warga.riwayat')}
                             active={route().current('warga.riwayat')}>
                                 Riwayat Laporan
                             </GreenButton>

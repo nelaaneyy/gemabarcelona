@@ -26,11 +26,11 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
     // State untuk mengontrol Modal Konfirmasi Teruskan ke Lurah
     const [isLurahModalOpen, setIsLurahModalOpen] = useState(false);
 
-    // Form untuk Update Status (KOREKSI: patch DITAMBAHKAN ke destructuring)
+    // Form untuk Update Status (KOREKSI: patch DITAMBAHKAN)
     const {
         data: statusData,
         setData: setStatusData,
-        patch, // <<< INI YANG DITAMBAHKAN >>>
+        patch, // <<< INI YANG HILANG DAN DITAMBAHKAN >>>
         processing: statusProcessing,
         errors: statusErrors
     } = useForm({
@@ -41,7 +41,7 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
     const {
         data: catData,
         setData: setCatData,
-        post: postCat, // post sudah di-alias ke postCat
+        post: postCat,
         processing: catProcessing,
         errors: catErrors,
         reset: resetCat
@@ -59,68 +59,56 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
 
     // Handler submit Status (via panel radio button)
     const handleUpdateStatus = (e) => {
-    e.preventDefault();
+        e.preventDefault();
+        // Gunakan STRING LITERAL TERTINGGI untuk menghindari semua cache helper
+        const url = `/rt/laporan/${pengaduan.id}/proses`;
 
-    let url;
-    try {
-        // COBA PAKAI ROUTE HELPER (PALING ANDAL)
-        url = route('rt.laporan.proses', pengaduan.id);
-    } catch (e) {
-        // Jika Ziggy gagal, pakai string literal sebagai fallback
-        url = `/rt/laporan/${pengaduan.id}/proses`;
-    }
-
-    // DEBUGGING: Log URL sebelum dikirim
-    console.log("Mengirim PATCH ke URL:", url); // <<< LIHAT INI DI KONSOL!
-
-    patch(url, {
-        status: statusData.status
-    }, {
-        preserveScroll: true,
-        onSuccess: () => setActionState(null),
-        onError: (err) => console.error("Update Status failed:", err),
-    });
-};
+        patch(url, {
+            status: statusData.status
+        }, {
+            preserveScroll: true,
+            onSuccess: () => setActionState(null),
+            onError: (err) => console.error("Update Status failed:", err),
+        });
+    };
 
     // Handler submit Tanggapan/Catatan
-        const handleAddCatatan = (e) => {
+    const handleAddCatatan = (e) => {
         e.preventDefault();
 
-        // Menggunakan STRING LITERAL yang dijamin benar
+        // MENGGUNAKAN STRING LITERAL: /rt/laporan/{id}/tanggapan
         const url = `/rt/laporan/${pengaduan.id}/tanggapan`;
 
-    // Kirim catData secara eksplisit untuk memastikan validasi bekerja
+        // Mengirim data eksplisit dan menggunakan postCat
         postCat(url, catData, {
             onSuccess: () => {
                 resetCat();
                 setActionState(null);
             },
-            // Pastikan Anda melihat log error konsol jika ada kegagalan validasi
-            onError: (err) => console.error("Validation/Server Error:", err),
+            onError: (err) => console.error("Error Tanggapan:", err),
         });
     };
 
+    // Handler untuk aksi Teruskan ke Lurah (setelah konfirmasi)
     const handleEscalateToLurah = () => {
-    closeLurahModal();
+        closeLurahModal();
+        const url = `/rt/laporan/${pengaduan.id}/proses`;
 
-    let url;
-    try {
-        url = route('rt.laporan.proses', pengaduan.id);
-    } catch (e) {
-        url = `/rt/laporan/${pengaduan.id}/proses`;
-    }
+        patch(url, {
+            status: 'DITERUSKAN_LURAH'
+        }, {
+            preserveScroll: true,
+            // Jika sukses, status akan berubah dan UI akan refresh
+        });
+    };
 
-    console.log("Mengirim PATCH Escalate ke URL:", url);
-
-    patch(url, { status: 'DITERUSKAN_LURAH' }, { /* ... */ });
-};
 
     // Data tampilan
     const formattedTanggalKejadian = new Date(pengaduan.tanggal_kejadian).toLocaleDateString('id-ID', { dateStyle: 'long' });
     const formattedTanggalLapor = new Date(pengaduan.created_at).toLocaleDateString('id-ID', { dateStyle: 'long' });
     const fotoUrl = pengaduan.foto ? `/storage/${pengaduan.foto}` : 'https://via.placeholder.com/600x400/E5E7EB/9CA3AF?text=Tidak+Ada+Foto';
     const statusBgColor = getStatusStyles(pengaduan.status);
-    const isEscalated = pengaduan.status === 'DITERUSKAN_LURAH'; // Status untuk disable tombol
+    const isEscalated = pengaduan.status === 'DITERUSKAN_LURAH';
 
 
     return (
@@ -133,7 +121,7 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
 
                         {/* Header */}
                         <div className="p-6 sm:p-8 border-b border-gray-200 flex justify-between items-center">
-                           <div>
+                            <div>
                                 <h2 className="text-2xl font-semibold text-gray-900">
                                     Detail Laporan
                                 </h2>
@@ -141,7 +129,7 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
                                     Laporan dari: {pengaduan.user?.name ?? 'Warga'} (RT {pengaduan.user?.nomor_rt ?? 'N/A'})
                                 </p>
                             </div>
-                             <Link
+                            <Link
                                 href={route('rt.dashboard')}
                                 className="text-sm text-indigo-600 hover:text-indigo-900"
                             >
@@ -151,7 +139,7 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
 
                         {/* Konten Detail */}
                         <div className="p-6 sm:p-8">
-                             {flash?.success && (
+                            {flash?.success && (
                                 <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md">
                                     {flash.success}
                                 </div>
@@ -288,7 +276,7 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
                                     </div>
                                 ))}
                                 {tanggapans?.length === 0 && (
-                                     <p className="text-gray-500 text-sm">Belum ada catatan atau tanggapan resmi untuk laporan ini.</p>
+                                    <p className="text-gray-500 text-sm">Belum ada catatan atau tanggapan resmi untuk laporan ini.</p>
                                 )}
                             </div>
                             {/* --- BATAS AREA TANGGAPAN/RIWAYAT --- */}

@@ -97,7 +97,7 @@ class PengaduanController extends Controller
         ]);
 
         // Asumsi: View frontend sudah diganti menjadi PengaduanShowWarga
-        return Inertia::render('Warga/PengaduanShowWarga', [
+        return Inertia::render('Warga/PengaduanShow', [
             'pengaduan' => $pengaduan,
             'tanggapans' => $pengaduan->tanggapans, // Kirim tanggapan publik
             'auth' => [
