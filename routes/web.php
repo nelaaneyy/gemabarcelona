@@ -40,7 +40,7 @@ Route::get('/verify-email', [EmailVerificationPromptController::class, '__invoke
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
+    Route::patch('/profile/deactivate', [ProfileController::class, 'deactivate'])->name('profile.deactivate');
     Route::middleware(['verified'])->group(function () {
 
 

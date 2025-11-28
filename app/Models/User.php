@@ -21,6 +21,7 @@ class User extends Authenticatable
         'nama_kelurahan',
         'alamat',
         'nomor_ktp',
+        'is_active'
     ];
 
     protected $hidden = [
