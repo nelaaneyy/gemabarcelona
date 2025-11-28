@@ -2,31 +2,33 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { Link, useForm, usePage } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
+import { Link, useForm, usePage } from '@inertiajs/react';
 
-export default function UpdateProfileInformationForm({ mustVerifyEmail, status, className = '' }) {
-    // --- PERBAIKAN DI SINI ---
-    // Menggunakan Optional Chaining dan default ke objek kosong ({})
-    const user = usePage().props?.auth?.user || {};
+export default function UpdateProfileInformation({
+    mustVerifyEmail,
+    status,
+    className = '',
+}) {
+    const user = usePage().props.auth?.user || {};
 
-    const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
-        // Menggunakan Optional Chaining saat inisialisasi form
-        name: user.name || '',
-        email: user.email || '',
-    });
-    // --- AKHIR PERBAIKAN PENTING ---
+    const { data, setData, patch, errors, processing, recentlySuccessful } =
+        useForm({
+           name: user.name || '',
+           email: user.email || '',
+        });
 
     const submit = (e) => {
         e.preventDefault();
-
         patch(route('profile.update'));
     };
 
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900">Informasi Profil</h2>
+                <h2 className="text-lg font-medium text-gray-900">
+                    Informasi Profil
+                </h2>
 
                 <p className="mt-1 text-sm text-gray-600">
                     Perbarui informasi akun profil dan alamat email Anda.
@@ -66,25 +68,25 @@ export default function UpdateProfileInformationForm({ mustVerifyEmail, status, 
                     <InputError className="mt-2" message={errors.email} />
                 </div>
 
-                {/* Bagian Verifikasi Email (Jika diperlukan) */}
-                {/* PERBAIKAN: Gunakan Optional Chaining pada user di bagian ini juga */}
-                {mustVerifyEmail && user?.email_verified_at === null && (
+                {mustVerifyEmail && user.email_verified_at === null && (
                     <div>
-                        <p className="text-sm mt-2 text-gray-800">
-                            Alamat email Anda belum terverifikasi.
+                        <p className="mt-2 text-sm text-gray-800">
+                            Alamat email Anda belum diverifikasi.
                             <Link
                                 href={route('verification.send')}
                                 method="post"
                                 as="button"
-                                className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
-                                Klik di sini untuk mengirim ulang email verifikasi.
+                                Klik di sini untuk mengirim ulang email
+                                verifikasi.
                             </Link>
                         </p>
 
                         {status === 'verification-link-sent' && (
-                            <div className="mt-2 font-medium text-sm text-green-600">
-                                Tautan verifikasi baru telah dikirim ke alamat email Anda.
+                            <div className="mt-2 text-sm font-medium text-green-600">
+                                Link verifikasi baru telah dikirim ke alamat
+                                email Anda.
                             </div>
                         )}
                     </div>
@@ -100,7 +102,9 @@ export default function UpdateProfileInformationForm({ mustVerifyEmail, status, 
                         leave="transition ease-in-out"
                         leaveTo="opacity-0"
                     >
-                        <p className="text-sm text-gray-600">Tersimpan.</p>
+                        <p className="text-sm text-gray-600">
+                            Berhasil disimpan.
+                        </p>
                     </Transition>
                 </div>
             </form>
