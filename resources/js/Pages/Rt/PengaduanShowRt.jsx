@@ -1,5 +1,5 @@
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, useForm, usePage, router } from '@inertiajs/react';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { useState, Fragment } from 'react';
@@ -21,18 +21,11 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
     const [actionState, setActionState] = useState(null);
     const [isLurahModalOpen, setIsLurahModalOpen] = useState(false);
 
-    // Form untuk Update Status (KOREKSI: patch DITAMBAHKAN)
     const {
-        data: statusData,
-        setData: setStatusData,
-        patch, // <<< INI YANG HILANG DAN DITAMBAHKAN >>>
         processing: statusProcessing,
+        post,
         errors: statusErrors
-    } = useForm({
-        status: pengaduan.status,
-    });
-
-    // Form untuk Tanggapan/Catatan Baru
+    } = useForm({});
     const {
         data: catData,
         setData: setCatData,
@@ -45,46 +38,55 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
         is_private: false,
     });
 
+    const [processingId, setProcessingId] = useState(null); // Track which button is processing
+
     function closeLurahModal() { setIsLurahModalOpen(false); }
     function openLurahModal() { setIsLurahModalOpen(true); }
 
-    // Handler submit Status (via panel radio button)
-    const handleUpdateStatus = (e) => {
-        e.preventDefault();
+    const handleStatusUpdate = (newStatus, actionName) => {
+        setProcessingId(actionName);
+        const url = route('rt.laporan.proses', pengaduan.id);
 
-        // PERBAIKAN: Menggunakan method patch() langsung tanpa membungkus data
-        patch(route('rt.laporan.proses', pengaduan.id), {
+        router.post(url, { status: newStatus }, {
             preserveScroll: true,
-            onSuccess: () => setActionState(null),
-            onError: (err) => console.error("Update Status failed:", err),
+            onSuccess: () => {
+                setProcessingId(null);
+                setActionState(null);
+                // Optional: Show success feedback if needed, but flash message usually handles it
+            },
+            onError: (errors) => {
+                setProcessingId(null);
+                console.error("Status Update Failed:", errors);
+                // Feature to identify error:
+                alert(`Gagal mengubah status: ${JSON.stringify(errors, null, 2)}`);
+            },
+            onFinish: () => setProcessingId(null),
         });
     };
 
-    // Handler submit Tanggapan/Catatan
+    const handleFinish = () => {
+        handleStatusUpdate('SELESAI', 'finish');
+    };
+
+    const handleEscalateToLurah = () => {
+        closeLurahModal();
+        handleStatusUpdate('DITERUSKAN_LURAH', 'escalate');
+    };
+
     const handleAddCatatan = (e) => {
         e.preventDefault();
+        const url = route('rt.laporan.tanggapan.store', pengaduan.id);
 
-        // PERBAIKAN: Menggunakan route() helper
-        postCat(route('rt.laporan.tanggapan.store', pengaduan.id), {
-            preserveScroll: true,
+        // ... (rest of simple postCat logic if unrelated) OR standard useForm is fine here for simple form
+        postCat(url, catData, {
             onSuccess: () => {
                 resetCat();
                 setActionState(null);
             },
-            onError: (err) => console.error("Error Tanggapan:", err),
-        });
-    };
-
-    // Handler untuk aksi Teruskan ke Lurah (setelah konfirmasi)
-    const handleEscalateToLurah = () => {
-        closeLurahModal();
-
-        // PERBAIKAN: Set data status terlebih dahulu, baru kirim
-        setStatusData('status', 'DITERUSKAN_LURAH');
-
-        patch(route('rt.laporan.proses', pengaduan.id), {
-            preserveScroll: true,
-            // Jika sukses, status akan berubah dan UI akan refresh
+            onError: (err) => {
+                console.error("Validation/Server Error:", err);
+                alert(`Gagal mengirim catatan: ${JSON.stringify(err, null, 2)}`);
+            },
         });
     };
 
@@ -92,7 +94,9 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
     const formattedTanggalLapor = new Date(pengaduan.created_at).toLocaleDateString('id-ID', { dateStyle: 'long' });
     const fotoUrl = pengaduan.foto ? `/storage/${pengaduan.foto}` : 'https://via.placeholder.com/600x400/E5E7EB/9CA3AF?text=Tidak+Ada+Foto';
     const statusBgColor = getStatusStyles(pengaduan.status);
-    const isEscalated = pengaduan.status === 'DITERUSKAN_LURAH';
+
+    const isFinishedOrEscalated = pengaduan.status === 'SELESAI' || pengaduan.status === 'DITERUSKAN_LURAH';
+    const isProcessing = pengaduan.status === 'DIPROSES_RT';
 
     return (
         <AdminLayout user={auth.user}>
@@ -126,6 +130,7 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
                                 </div>
                             )}
 
+                            {/* ... Detail Laporan (Image, Title, Data) ... */}
                             <div className="mb-6 rounded-lg overflow-hidden border border-gray-200">
                                 <img src={fotoUrl} alt={`Foto ${pengaduan.judul}`} className="w-full h-auto object-contain max-h-96 bg-gray-50" />
                             </div>
@@ -136,6 +141,9 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
                                     <span className={`px-3 py-1 rounded-full text-sm font-semibold ${statusBgColor}`}>
                                         Status: {pengaduan.status.replace('_', ' ')}
                                     </span>
+                                    {pengaduan.status === 'DIPROSES_RT' && (
+                                        <span className="ml-2 text-xs text-yellow-600 font-medium"> (Sedang ditangani oleh RT Anda)</span>
+                                    )}
                                 </div>
                                 <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
                                     <div className="sm:col-span-1"><dt className="font-medium text-gray-500">Nama Pelapor Asli</dt><dd className="mt-1 text-gray-900">{pengaduan.nama_pelapor}</dd></div>
@@ -146,66 +154,52 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
                                     <div className="sm:col-span-2"><dt className="font-medium text-gray-500">Deskripsi</dt><dd className="mt-1 text-gray-900 whitespace-pre-wrap">{pengaduan.isi_laporan}</dd></div>
                                 </dl>
                             </div>
+                            {/* ... Akhir Detail Laporan ... */}
+
 
                             <div className="mt-8 pt-6 border-t border-gray-200">
-                                <h4 className="text-lg font-medium text-gray-900 mb-4">Aksi Laporan</h4>
+                                <h4 className="text-lg font-medium text-gray-900 mb-4">Aksi RT</h4>
 
-                                <div className="flex space-x-3 mb-4">
-                                    <PrimaryButton
-                                        onClick={() => setActionState(actionState === 'status' ? null : 'status')}
-                                        className={actionState === 'status' ? 'bg-indigo-700' : 'bg-indigo-600'}
-                                        disabled={isEscalated}
-                                    >
-                                        Perbarui Status
-                                    </PrimaryButton>
+                                {!isFinishedOrEscalated ? (
+                                    <div className="flex space-x-3 mb-4">
 
-                                    <PrimaryButton
-                                        onClick={() => setActionState(actionState === 'catatan' ? null : 'catatan')}
-                                        className={actionState === 'catatan' ? 'bg-green-700' : 'bg-green-600'}
-                                    >
-                                        Tambah Catatan
-                                    </PrimaryButton>
+                                        {/* TOMBOL BARU: TANDAI SELESAI */}
+                                        {isProcessing && (
+                                            <PrimaryButton
+                                                onClick={handleFinish}
+                                                className="bg-green-600 hover:bg-green-700"
+                                                disabled={processingId === 'finish'}
+                                            >
+                                                {processingId === 'finish' ? 'Memproses...' : '✅ Tandai Selesai'}
+                                            </PrimaryButton>
+                                        )}
 
-                                    <PrimaryButton
-                                        onClick={openLurahModal}
-                                        className="bg-red-500 hover:bg-red-600"
-                                        disabled={isEscalated}
-                                    >
-                                        Teruskan ke Kelurahan
-                                    </PrimaryButton>
-                                </div>
+                                        <PrimaryButton
+                                            onClick={() => setActionState(actionState === 'catatan' ? null : 'catatan')}
+                                            className={actionState === 'catatan' ? 'bg-green-700' : 'bg-green-600'}
+                                            disabled={!!processingId}
+                                        >
+                                            Tambah Catatan/Tanggapan
+                                        </PrimaryButton>
 
-                                {actionState === 'status' && (
-                                    <div className="bg-gray-50 p-4 border border-indigo-200 rounded-lg">
-                                        <h5 className="font-semibold mb-3 text-gray-700">Pilih Status Baru:</h5>
-                                        <form onSubmit={handleUpdateStatus} className="space-y-3">
-                                            {['BARU', 'DIPROSES_RT', 'SELESAI', 'DITOLAK'].map(statusVal => (
-                                                <label key={statusVal} className="flex items-center space-x-2 text-gray-700 cursor-pointer">
-                                                    <input
-                                                        type="radio"
-                                                        name="status"
-                                                        value={statusVal}
-                                                        checked={statusData.status === statusVal}
-                                                        onChange={(e) => setStatusData('status', e.target.value)}
-                                                        className="form-radio text-indigo-600"
-                                                    />
-                                                    <span>{statusVal.replace('_', ' ')}</span>
-                                                </label>
-                                            ))}
-
-                                            <InputError message={statusErrors.status} className="mt-2" />
-
-                                            <div className="pt-3">
-                                                <PrimaryButton disabled={statusProcessing || statusData.status === pengaduan.status}>
-                                                    Simpan Status
-                                                </PrimaryButton>
-                                            </div>
-                                        </form>
+                                        <PrimaryButton
+                                            onClick={openLurahModal}
+                                            className="bg-red-500 hover:bg-red-600"
+                                            disabled={!!processingId}
+                                        >
+                                            Teruskan ke Kelurahan
+                                        </PrimaryButton>
                                     </div>
+                                ) : (
+                                    <p className="text-sm text-gray-500 font-medium">Laporan ini sudah ditutup (Status: {pengaduan.status.replace('_', ' ')})</p>
                                 )}
 
+                                {statusErrors.status && <p className="text-sm text-red-600 mt-2">{statusErrors.status}</p>}
+
+                                {/* HAPUS: {actionState === 'status' && (...) } PAnel radio button Status */}
+
                                 {actionState === 'catatan' && (
-                                    <div className="bg-gray-50 p-4 border border-green-200 rounded-lg">
+                                    <div className="bg-gray-50 p-4 border border-green-200 rounded-lg mt-4">
                                         <h5 className="font-semibold mb-3 text-gray-700">Tambahkan Catatan Resmi:</h5>
                                         <form onSubmit={handleAddCatatan} className="space-y-3">
                                             <textarea
@@ -244,6 +238,7 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
                             <div className="mt-8 pt-6 border-t border-gray-200">
                                 <h4 className="text-lg font-medium text-gray-900 mb-4">Riwayat Tanggapan ({tanggapans?.length ?? 0})</h4>
 
+                                {/* ... Riwayat Tanggapan (Tidak ada perubahan) ... */}
                                 {tanggapans && tanggapans.map(t => (
                                     <div key={t.id} className="bg-gray-100 p-3 rounded-lg border-l-4 border-gray-400 mb-3 text-sm">
                                         <p className="font-semibold text-gray-800">Dari RT {t.user.nomor_rt} pada {new Date(t.created_at).toLocaleDateString('id-ID')}</p>
@@ -260,8 +255,10 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
                 </div>
             </div>
 
+            {/* Modal Teruskan ke Lurah (Tidak ada perubahan signifikan) */}
             <Transition appear show={isLurahModalOpen} as={Fragment}>
                 <Dialog as="div" className="relative z-50" onClose={closeLurahModal}>
+                    {/* ... (Modal backdrop dan panel) ... */}
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -287,23 +284,23 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
                             >
                                 <Dialog.Panel className="w-full max-w-sm transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
                                     <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                                        Laporan di Teruskan ke Kelurahan!
+                                        Konfirmasi Teruskan ke Kelurahan
                                     </Dialog.Title>
 
                                     <div className="mt-2">
                                         <p className="text-sm text-gray-500">
-                                            Laporan warga tidak ditangani oleh kelurahan RT. Apabila sudah yakin, silakan lanjutkan proses ini.
+                                            Apakah Anda yakin ingin meneruskan laporan ini ke tingkat Kelurahan? Setelah diteruskan, penanganan akan diambil alih oleh Lurah.
                                         </p>
                                     </div>
 
                                     <div className="mt-4 flex justify-end">
                                         <button
                                             type="button"
-                                            className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+                                            className="inline-flex justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
                                             onClick={handleEscalateToLurah}
-                                            disabled={statusProcessing} // Gunakan processing dari form status
+                                            disabled={statusProcessing}
                                         >
-                                            Selesai
+                                            Ya, Teruskan Sekarang
                                         </button>
                                         <button
                                             type="button"

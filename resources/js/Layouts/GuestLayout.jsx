@@ -1,18 +1,21 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
-import { Link } from '@inertiajs/react';
+// Ganti path import Navbar jika lokasi file Anda berbeda
+import Navbar from '@/Components/Navbar';
 
 export default function GuestLayout({ children }) {
-    return (
-        <div className="flex min-h-screen flex-col items-center bg-gray-100 pt-6 sm:justify-center sm:pt-0">
-            <div>
-                <Link href="/">
-                    <ApplicationLogo className="h-20 w-20 fill-current text-gray-500" />
-                </Link>
-            </div>
+    const backgroundStyle = {
+        background: 'linear-gradient(180deg, rgba(235, 227, 219, 1) 0%, rgba(200, 195, 185, 1) 100%)',
+    };
 
-            <div className="mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg">
+    return (
+        <div style={backgroundStyle} className="min-h-screen">
+
+            <Navbar />
+
+            <main>
                 {children}
-            </div>
+            </main>
+
+            <footer/>
         </div>
     );
 }

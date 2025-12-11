@@ -1,27 +1,28 @@
-import AdminLayout from '@/Layouts/AdminLayout';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'; // Layout untuk Warga
 import { Head } from '@inertiajs/react';
 
-// Pastikan path import ini benar:
+// Impor partial yang sama
 import DeleteUserForm from './Partials/DeleteUserForm';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 
-export default function Edit({ mustVerifyEmail, status }) {
+export default function EditWarga({ auth, mustVerifyEmail, status }) {
     return (
-        <AdminLayout
+        <AuthenticatedLayout
+            user={auth.user}
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Profile Pengguna
+                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+                    Profile Saya
                 </h2>
             }
         >
-            <Head title="Profile" />
+            <Head title="Profile Saya" />
 
             <div className="py-12">
                 <div className="mx-auto max-w-4xl space-y-6 sm:px-6 lg:px-8">
 
                     {/* 1. Update Profile Information */}
-                    <div className="bg-white p-4 shadow-xl sm:rounded-lg sm:p-8">
+                    <div className="p-4 sm:p-8 bg-white shadow-xl sm:rounded-lg">
                         <UpdateProfileInformationForm
                             mustVerifyEmail={mustVerifyEmail}
                             status={status}
@@ -30,17 +31,16 @@ export default function Edit({ mustVerifyEmail, status }) {
                     </div>
 
                     {/* 2. Update Password */}
-                    <div className="bg-white p-4 shadow-xl sm:rounded-lg sm:p-8">
+                    <div className="p-4 sm:p-8 bg-white shadow-xl sm:rounded-lg">
                         <UpdatePasswordForm className="max-w-full" />
                     </div>
 
-                    {/* 3. Nonaktifkan Akun (Menggantikan Delete) */}
-                    <div className="bg-white p-4 shadow-xl sm:rounded-lg sm:p-8">
-                        {/* Karena logic DeleteUserForm sudah kita ubah menjadi Deactivate */}
+                    {/* 3. Nonaktifkan Akun */}
+                    <div className="p-4 sm:p-8 bg-white shadow-xl sm:rounded-lg">
                         <DeleteUserForm className="max-w-full" />
                     </div>
                 </div>
             </div>
-        </AdminLayout>
+        </AuthenticatedLayout>
     );
 }

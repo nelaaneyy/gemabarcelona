@@ -55,7 +55,7 @@ const LaporanCardRt = ({ laporan }) => {
                 <div className="text-right mt-3 space-x-2">
                     <Link
                         // Rute yang baru! rt.laporan.show
-                        href={route('rt.laporan.show', laporan.id)}
+                        href={route('rt.laporan.show', { laporan: laporan.id })}
                         className="px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-md hover:bg-indigo-500 transition-colors shadow-sm"
                     >
                         Lihat Detail

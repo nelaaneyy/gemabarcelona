@@ -6,20 +6,20 @@ import { Link, useForm, usePage } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
 
 export default function UpdateProfileInformationForm({ mustVerifyEmail, status, className = '' }) {
-    // --- PERBAIKAN DI SINI ---
-    // Menggunakan Optional Chaining dan default ke objek kosong ({})
-    const user = usePage().props?.auth?.user || {};
+    const user = usePage().props.auth.user;
 
-    const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
-        // Menggunakan Optional Chaining saat inisialisasi form
-        name: user.name || '',
-        email: user.email || '',
-    });
-    // --- AKHIR PERBAIKAN PENTING ---
+    const { data, setData,
+        // GANTI DARI put, JADI patch
+        patch,
+        errors, processing, recentlySuccessful } = useForm({
+            name: user.name,
+            email: user.email,
+        });
 
     const submit = (e) => {
         e.preventDefault();
 
+        // Panggil method patch
         patch(route('profile.update'));
     };
 
@@ -67,8 +67,7 @@ export default function UpdateProfileInformationForm({ mustVerifyEmail, status, 
                 </div>
 
                 {/* Bagian Verifikasi Email (Jika diperlukan) */}
-                {/* PERBAIKAN: Gunakan Optional Chaining pada user di bagian ini juga */}
-                {mustVerifyEmail && user?.email_verified_at === null && (
+                {mustVerifyEmail && user.email_verified_at === null && (
                     <div>
                         <p className="text-sm mt-2 text-gray-800">
                             Alamat email Anda belum terverifikasi.
