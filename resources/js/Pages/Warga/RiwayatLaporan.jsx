@@ -4,7 +4,9 @@ import { Link } from '@inertiajs/react';
 
 // --- Komponen Kartu Laporan (Internal untuk RiwayatLaporan) ---
 const LaporanCard = ({ laporan }) => {
-    const fotoUrl = laporan.foto ? `/storage/${laporan.foto}` : 'https://via.placeholder.com/150/CBD5E0/FFFFFF?text=GEMA';
+    const fotoUrl = laporan.foto
+        ? (laporan.foto.startsWith('http') ? laporan.foto : `/storage/${laporan.foto}`)
+        : 'https://via.placeholder.com/150/CBD5E0/FFFFFF?text=GEMA';
 
     // Helper untuk status badge
     const getStatusStyle = (status) => {

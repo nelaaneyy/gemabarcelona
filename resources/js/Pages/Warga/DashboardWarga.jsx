@@ -4,7 +4,9 @@ import RiwayatLaporan from './RiwayatLaporan';
 
 const LaporanCard = ({ laporan }) => {
     // Path foto
-    const fotoUrl = laporan.foto ? `/storage/${laporan.foto}` : 'https://via.placeholder.com/150/22543D/FFFFFF?text=GEMA';
+    const fotoUrl = laporan.foto
+        ? (laporan.foto.startsWith('http') ? laporan.foto : `/storage/${laporan.foto}`)
+        : 'https://via.placeholder.com/150/22543D/FFFFFF?text=GEMA';
 
     return (
         <div className="bg-white/5 backdrop-blur-md rounded-2xl overflow-hidden flex transform transition-all duration-300 hover:shadow-2xl hover:shadow-green-900/20 hover:-translate-y-1 border border-white/10 group">

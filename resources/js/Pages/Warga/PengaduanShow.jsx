@@ -16,7 +16,9 @@ export default function PengaduanShow() {
     });
 
     // Tentukan path foto
-    const fotoUrl = pengaduan.foto ? `/storage/${pengaduan.foto}` : 'https://via.placeholder.com/600x400/000000/333333?text=Tidak+Ada+Foto';
+    const fotoUrl = pengaduan.foto
+        ? (pengaduan.foto.startsWith('http') ? pengaduan.foto : `/storage/${pengaduan.foto}`)
+        : 'https://via.placeholder.com/600x400/000000/333333?text=Tidak+Ada+Foto';
 
     // Styling untuk status badge
     let statusStyle = 'bg-gray-500/20 text-gray-300 border-gray-500/50'; // Default

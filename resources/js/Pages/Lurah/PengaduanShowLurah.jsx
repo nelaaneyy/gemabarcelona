@@ -76,7 +76,9 @@ export default function PengaduanShowLurah({ auth, pengaduan, tanggapans }) {
     };
 
     const formattedTanggalKejadian = new Date(pengaduan.tanggal_kejadian).toLocaleDateString('id-ID', { dateStyle: 'long' });
-    const fotoUrl = pengaduan.foto ? `/storage/${pengaduan.foto}` : 'https://via.placeholder.com/600x400/000000/333333?text=Tidak+Ada+Foto';
+    const fotoUrl = pengaduan.foto
+        ? (pengaduan.foto.startsWith('http') ? pengaduan.foto : `/storage/${pengaduan.foto}`)
+        : 'https://via.placeholder.com/600x400/000000/333333?text=Tidak+Ada+Foto';
     const statusStyle = getStatusStyles(pengaduan.status);
 
     const isFinalStatus = ['SELESAI', 'DITOLAK'].includes(pengaduan.status);

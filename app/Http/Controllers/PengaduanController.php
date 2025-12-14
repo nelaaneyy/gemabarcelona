@@ -56,10 +56,12 @@ class PengaduanController extends Controller
         // 2. Handle File Upload (Cloudinary)
         $fotoPath = null;
         if ($request->hasFile('foto')) {
-            // Upload to Cloudinary folder 'pengaduan'
-            $result = $request->file('foto')->storeOnCloudinary('pengaduan');
-            // Get the secure URL of the uploaded file
-            $fotoPath = $result->getSecurePath();
+            // Upload using the 'cloudinary' disk
+            // store() returns the path/public_id
+            $path = $request->file('foto')->store('pengaduan', 'cloudinary');
+            
+            // Get the full URL from the Storage facade
+            $fotoPath = \Illuminate\Support\Facades\Storage::disk('cloudinary')->url($path);
         }
 
         // 3. Simpan ke Database

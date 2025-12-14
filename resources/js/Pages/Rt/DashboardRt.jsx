@@ -7,7 +7,9 @@ import clsx from 'clsx';
 
 // --- Komponen Kartu Laporan (Dark Mode) ---
 const LaporanCardRt = ({ laporan }) => {
-    const fotoUrl = laporan.foto ? `/storage/${laporan.foto}` : 'https://via.placeholder.com/150/22543D/FFFFFF?text=GEMA';
+    const fotoUrl = laporan.foto
+        ? (laporan.foto.startsWith('http') ? laporan.foto : `/storage/${laporan.foto}`)
+        : 'https://via.placeholder.com/150/22543D/FFFFFF?text=GEMA';
 
     // Fungsi helper untuk mendapatkan warna status (Dark Mode)
     const getStatusStyles = (status) => {

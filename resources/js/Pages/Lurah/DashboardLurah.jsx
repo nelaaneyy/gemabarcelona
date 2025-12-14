@@ -20,7 +20,9 @@ const StatCard = ({ label, value, colorClass = 'text-green-400' }) => (
 
 // --- Card Laporan Modern ---
 const LaporanCardLurah = ({ laporan }) => {
-    const fotoUrl = laporan.foto ? `/storage/${laporan.foto}` : 'https://via.placeholder.com/150/22543D/FFFFFF?text=GEMA';
+    const fotoUrl = laporan.foto
+        ? (laporan.foto.startsWith('http') ? laporan.foto : `/storage/${laporan.foto}`)
+        : 'https://via.placeholder.com/150/22543D/FFFFFF?text=GEMA';
 
     const getStatusStyles = (status) => {
         switch (status) {
