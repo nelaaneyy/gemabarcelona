@@ -109,6 +109,14 @@ export default function AdminLayout({ children }) {
                                 <SidebarNavLink href="#" active={false} icon={DocumentTextIcon}>
                                     Data Laporan
                                 </SidebarNavLink>
+
+                                {/* Menu Khusus RT */}
+                                {user?.role === 'rt' && (
+                                    <SidebarNavLink href={route('rt.warga.index')} active={route().current('rt.warga.index')} icon={UserIcon}>
+                                        Manajemen Warga
+                                    </SidebarNavLink>
+                                )}
+
                                 <SidebarNavLink href={route('profile.edit')} active={route().current('profile.edit')} icon={UserIcon}>
                                     Profil
                                 </SidebarNavLink>

@@ -5,6 +5,7 @@ import AboutSection from '@/Components/AboutSection';
 import FeaturesSection from '@/Components/FeaturesSection';
 import FeaturedStartups from '@/Components/FeaturedStartups';
 import Footer from '@/Components/Footer';
+import { clsx } from 'clsx';
 
 export default function HomePage() {
     // 🔑 Pastikan 'perumahan.jpg' ada di folder public/image/
@@ -14,78 +15,78 @@ export default function HomePage() {
     const features = [
         { icon: SparklesIcon, text: 'Pengaduan Perbaikan Jalan' },
         { icon: TruckIcon, text: 'Pengaduan Listrik Mati' },
-        { icon: CurrencyDollarIcon, text: 'Pengaduan Lorem Ipsum' },
+        { icon: CurrencyDollarIcon, text: 'Pengaduan Fasilitas Umum' },
     ];
 
     return (
-        <GuestLayout>
+        <GuestLayout navbarTheme="dark">
 
-            {/* 1. BAGIAN HERO UTAMA (Full Screen) */}
-            <div className="relative min-h-screen pt-16">
+            {/* 1. BAGIAN HERO UTAMA (Full Screen, Dark Premium Theme) */}
+            <div className="relative min-h-screen pt-16 overflow-hidden bg-black">
 
-                {/* Konten Hero (Teks, Tombol, dll.) */}
-                {/* z-10 memastikan konten ini berada di atas gambar */}
-                <div className="flex flex-col items-center justify-center pt-20 pb-10 text-center relative z-10">
+                {/* Background Image & Overlay - Matching Login/Register */}
+                <div
+                    className="absolute inset-0 z-0 opacity-70 transform scale-105 transition-transform duration-[20s] ease-linear animate-slow-zoom"
+                    style={{
+                        backgroundImage: `url('${heroImageUrl}')`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                    }}
+                ></div>
+                {/* Gradient Overlay Matching Auth Pages */}
+                <div className="absolute inset-0 bg-gradient-to-br from-green-900/90 via-black/80 to-green-900/90 z-0"></div>
 
-                    {/* Badge di atas Heading */}
-                    <div className="bg-white/50 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-medium text-black shadow-lg mb-4">
+                {/* Konten Hero */}
+                <div className="flex flex-col items-center justify-center min-h-screen pt-20 pb-10 text-center relative z-10 px-4">
+
+                    {/* Badge Glassmorphism */}
+                    <div className="bg-white/10 backdrop-blur-md border border-white/20 px-6 py-2 rounded-full text-sm font-medium text-green-100 shadow-lg mb-8 animate-fadeIn">
                         ✨ Web Pengaduan Infrastruktur Untuk Perumahan Barcelona Jambi
                     </div>
 
                     {/* Heading Utama */}
-                    <h1 className="text-6xl font-extrabold text-black leading-tight max-w-4xl tracking-wider drop-shadow-lg">
-                        Gerakan Masyarakat Melaporkan Infrastruktur
+                    <h1 className="text-5xl md:text-7xl font-black text-white leading-tight max-w-5xl tracking-wide drop-shadow-2xl mb-6">
+                        Gerakan Masyarakat <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300">Melaporkan</span> Infrastruktur
                     </h1>
 
-                    {/* Deskripsi (Telah Disesuaikan ke Bahasa Indonesia) */}
-                    <p className="mt-6 text-lg text-gray-800 max-w-xl drop-shadow-md">
-                        Laporkan masalah infrastruktur di Perumahan Barcelona Jambi secara cepat dan transparan. Bersama, kita wujudkan lingkungan yang lebih baik dan nyaman.
+                    {/* Deskripsi */}
+                    <p className="mt-4 text-lg md:text-xl text-green-50/80 max-w-2xl drop-shadow-md font-light tracking-wide leading-relaxed">
+                        Laporkan masalah infrastruktur di Perumahan Barcelona Jambi secara cepat, mudah, dan transparan. Mewujudkan lingkungan yang lebih nyaman, satu laporan pada satu waktu.
                     </p>
 
                     {/* Tombol Aksi */}
-                    <div className="mt-10 flex space-x-6">
-                        <a href="#" className="bg-black text-white hover:bg-gray-800 px-8 py-3 rounded-full text-lg font-semibold shadow-2xl transition duration-300">
+                    <div className="mt-12 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6">
+                        <a href="#" className="flex items-center justify-center bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white px-8 py-4 rounded-full text-lg font-bold shadow-lg shadow-green-900/50 transition-all duration-300 transform hover:-translate-y-1">
                             Jelajahi Layanan
                         </a>
-                        <a href={route('register')} className="bg-white text-black hover:bg-gray-200 px-8 py-3 rounded-full text-lg font-semibold shadow-2xl transition duration-300">
+                        <a href={route('register')} className="flex items-center justify-center bg-white/10 hover:bg-white/20 border border-white/30 text-white px-8 py-4 rounded-full text-lg font-semibold backdrop-blur-md shadow-lg transition-all duration-300 transform hover:-translate-y-1">
                             Daftar Sekarang
                         </a>
                     </div>
 
-                    {/* Fitur Bawah */}
-                    {/* Menyesuaikan warna teks fitur bawah agar lebih terlihat di atas gambar */}
-                    <div className="absolute bottom-[-150px] w-full flex justify-center space-x-12 mt-12 p-4">
+                    {/* Fitur Bawah - Glass Cards */}
+                    <div className="flex flex-wrap justify-center gap-4 mt-20 animate-slideUp">
                         {features.map((feature, index) => (
-                            <div key={index} className="flex items-center space-x-2 text-white text-sm font-semibold p-2 bg-black/50 backdrop-blur-sm rounded-full">
-                                <feature.icon className="h-5 w-5 text-yellow-400" />
-                                <span>{feature.text}</span>
+                            <div key={index} className="flex items-center space-x-3 px-5 py-3 bg-white/5 border border-white/10 backdrop-blur-md rounded-full hover:bg-white/10 transition-colors duration-300 cursor-default">
+                                <feature.icon className="h-6 w-6 text-green-400" />
+                                <span className="text-white/90 text-sm font-medium tracking-wide">{feature.text}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                {/* Elemen Visual (Gambar Latar Belakang) */}
-                <div
-                    className="absolute inset-0 z-0 opacity-70"
-                    style={{
-                        backgroundImage: `url('${heroImageUrl}')`,
-                        backgroundSize: 'cover', // Mengisi lebar penuh
-                        backgroundPosition: 'center center',
-                        backgroundRepeat: 'no-repeat',
-                    }}
-                >
-                    {/* Overlay gradasi gelap di bagian bawah gambar (untuk membantu keterbacaan) */}
-                    <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-gray-100 to-transparent"></div>
-                </div>
+                {/* Decorative Bottom Fade */}
+                <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black to-transparent z-10"></div>
             </div>
 
-            {/* 2. BAGIAN ABOUT (Diaktifkan) */}
+            {/* 2. BAGIAN ABOUT */}
             <AboutSection />
 
-            {/* 3. BAGIAN FEATURES (Diaktifkan) */}
+            {/* 3. BAGIAN FEATURES */}
             <FeaturesSection />
 
-            {/* 4. BAGIAN FEATURED STARTUPS (Diaktifkan) */}
+            {/* 4. BAGIAN FEATURED STARTUPS */}
             <FeaturedStartups />
 
             <Footer />

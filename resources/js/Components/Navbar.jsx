@@ -1,67 +1,91 @@
 // src/components/Navbar.jsx
 import { Disclosure } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-// Pastikan Anda sudah menginstal dan mengkonfigurasi Ziggy di Laravel
+import { Link, usePage } from '@inertiajs/react';
 
 const navigation = [
-    { name: 'Beranda', href: '#' },
-    { name: 'Tentang Kami', href: '#' },
-    // { name: 'For Investors', href: '#' },
-    // { name: 'Insights', href: '#' },
-    // { name: 'Events', href: '#' },
+    { name: 'Beranda', routeName: 'homepage' },
+    { name: 'Layanan', routeName: 'layanan' },
+    { name: 'Tentang Kami', routeName: 'tentang-kami' },
 ];
 
-export default function Navbar() {
+function classNames(...classes) {
+    return classes.filter(Boolean).join(' ');
+}
+
+export default function Navbar({ theme = 'light' }) {
+    // Defines styles based on theme
+    const isDark = theme === 'dark';
+
+    const navClasses = isDark
+        ? 'bg-transparent backdrop-blur-sm border-b border-white/10' // Dark/Transparent Theme
+        : 'bg-white/30 backdrop-blur-md border-b border-white/20';   // Light/Glass Theme
+
+    const textLogoClass = isDark ? 'text-white' : 'text-black';
+    const textLinkDefault = isDark ? 'text-gray-300 hover:text-white hover:bg-white/10' : 'text-gray-800 hover:text-[#085128] hover:bg-white/40';
+    const textLinkActive = isDark ? 'text-white font-bold border-b-2 border-white' : 'text-[#085128] font-bold border-b-2 border-[#085128]';
+    const loginBtnClass = isDark ? 'text-white hover:text-green-400' : 'text-gray-900 hover:text-indigo-600';
+    const registerBtnClass = isDark ? 'bg-white text-black hover:bg-gray-200' : 'bg-black text-white hover:bg-gray-800';
+    const mobileMenuButtonClass = isDark ? 'text-white hover:bg-white/10 hover:text-white' : 'text-gray-800 hover:bg-gray-100/50 hover:text-black';
+
     return (
-        <Disclosure as="nav" className="absolute top-0 left-0 right-0 z-20 bg-white/30">
+        <Disclosure as="nav" className={`absolute top-0 left-0 right-0 z-50 transition-all duration-300 ${navClasses}`}>
             {({ open }) => (
                 <>
-                    {/* Kontainer Utama Navigasi */}
-                    <div className="mx-auto px-4 sm:px-6 lg:px-8 backdrop-blur-sm">
-                        <div className="relative flex h-20 items-center justify-between backdrop-blur-sm">
+                    <div className="mx-auto px-4 sm:px-6 lg:px-8 relative">
+                        <div className="relative flex h-20 items-center justify-between">
 
-                            <div className="flex-shrink-0 flex items-center backdrop-blur-sm">
-                                <h1 className="text-xl font-bold text-black tracking-wider drop-shadow-sm">
+                            {/* LOGO (Left) */}
+                            <div className="flex-shrink-0 flex items-center z-20">
+                                <Link href={route('homepage')} className={`text-2xl font-black tracking-wider drop-shadow-sm hover:opacity-80 transition ${textLogoClass}`}>
                                     GEMA
-                                </h1>
+                                </Link>
                             </div>
 
-                            {/* Tautan Navigasi Desktop */}
-                            <div className="hidden sm:ml-6 sm:block">
-                                <div className="flex space-x-4">
-                                    {navigation.map((item) => (
-                                        <a
-                                            key={item.name}
-                                            href={item.href}
-                                            className="text-black hover:text-gray-600 px-3 py-2 text-sm font-medium transition duration-150"
-                                        >
-                                            {item.name}
-                                        </a>
-                                    ))}
+                            {/* DESKTOP MENU (Absolute Center) */}
+                            <div className="hidden sm:absolute sm:inset-0 sm:flex sm:justify-center sm:items-center z-10 pointer-events-none">
+                                <div className="pointer-events-auto flex space-x-8">
+                                    {navigation.map((item) => {
+                                        // Handle routing securely
+                                        const isActive = item.routeName ? route().current(item.routeName) : false;
+                                        const href = item.routeName ? route(item.routeName) : item.href;
+
+                                        return (
+                                            <Link
+                                                key={item.name}
+                                                href={href}
+                                                className={classNames(
+                                                    isActive ? textLinkActive : textLinkDefault,
+                                                    'px-3 py-2 text-sm font-medium transition-all duration-200 rounded-t-md'
+                                                )}
+                                                aria-current={isActive ? 'page' : undefined}
+                                            >
+                                                {item.name}
+                                            </Link>
+                                        );
+                                    })}
                                 </div>
                             </div>
 
-                            {/* Tombol Login/Join Now & Tombol Menu Mobile */}
-                            <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                            {/* RIGHT SIDE BUTTONS (Right) */}
+                            <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 z-20">
 
-                                {/* 🔑 LOGIN (Desktop) - Menggunakan route('login') */}
-                                <a
+                                <Link
                                     href={route('login')}
-                                    className="text-black hover:text-gray-600 px-3 py-2 text-sm font-medium hidden sm:block"
+                                    className={`px-3 py-2 text-sm font-bold tracking-wide transition hidden sm:block ${loginBtnClass}`}
                                 >
-                                    Login
-                                </a>
+                                    Masuk
+                                </Link>
 
-                                {/* 🔑 JOIN NOW (REGISTER) (Desktop) - Menggunakan route('register') */}
-                                <a
+                                <Link
                                     href={route('register')}
-                                    className="ml-4 bg-black text-white hover:bg-gray-800 px-4 py-2 rounded-full text-sm font-semibold shadow-md hidden sm:block transition duration-150"
+                                    className={`ml-4 px-5 py-2.5 rounded-full text-sm font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition duration-200 hidden sm:block ${registerBtnClass}`}
                                 >
-                                    Daftar
-                                </a>
+                                    Daftar Sekarang
+                                </Link>
 
-                                {/* Tombol Menu Mobile */}
-                                <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-black hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-black sm:hidden">
+                                {/* Mobile menu button */}
+                                <Disclosure.Button className={`inline-flex items-center justify-center rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white sm:hidden ${mobileMenuButtonClass}`}>
                                     <span className="sr-only">Open main menu</span>
                                     {open ? (
                                         <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
@@ -73,35 +97,44 @@ export default function Navbar() {
                         </div>
                     </div>
 
-                    {/* Navigasi Mobile Panel */}
-                    <Disclosure.Panel className="sm:hidden bg-white/95 backdrop-blur-sm border-t border-gray-100 shadow-lg">
+                    {/* MOBILE MENU */}
+                    <Disclosure.Panel className="sm:hidden bg-black/90 backdrop-blur-xl border-t border-white/10 shadow-2xl">
                         <div className="space-y-1 px-4 pb-3 pt-2">
-                            {navigation.map((item) => (
-                                <Disclosure.Button
-                                    key={item.name}
-                                    as="a"
-                                    href={item.href}
-                                    className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-black"
+                            {navigation.map((item) => {
+                                const isActive = item.routeName ? route().current(item.routeName) : false;
+                                const href = item.routeName ? route(item.routeName) : item.href;
+                                return (
+                                    <Disclosure.Button
+                                        key={item.name}
+                                        as={Link}
+                                        href={href}
+                                        className={classNames(
+                                            isActive
+                                                ? 'bg-white/10 text-white font-bold border-l-4 border-green-500'
+                                                : 'text-gray-300 hover:bg-white/5 hover:text-white font-medium',
+                                            'block rounded-r-md px-3 py-2 text-base w-full text-left transition'
+                                        )}
+                                        aria-current={isActive ? 'page' : undefined}
+                                    >
+                                        {item.name}
+                                    </Disclosure.Button>
+                                );
+                            })}
+
+                            <div className="mt-4 border-t border-white/10 pt-4 pb-2">
+                                <Link
+                                    href={route('login')}
+                                    className="block w-full text-center px-3 py-2 text-base font-bold text-gray-300 hover:text-white"
                                 >
-                                    {item.name}
-                                </Disclosure.Button>
-                            ))}
-                            {/* Login (Mobile) - Menggunakan route('login') */}
-                            <Disclosure.Button
-                                as="a"
-                                href={route('login')}
-                                className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 hover:text-black mt-2"
-                            >
-                                Login
-                            </Disclosure.Button>
-                            {/* Join Now (Mobile) - Menggunakan route('register') */}
-                            <Disclosure.Button
-                                as="a"
-                                href={route('register')}
-                                className="block rounded-md px-3 py-2 text-base font-medium text-white bg-black hover:bg-gray-800 mt-2 text-center"
-                            >
-                                Join Now
-                            </Disclosure.Button>
+                                    Masuk
+                                </Link>
+                                <Link
+                                    href={route('register')}
+                                    className="block w-full mt-2 text-center px-3 py-3 rounded-lg text-base font-bold text-black bg-white hover:bg-gray-200 shadow-md"
+                                >
+                                    Daftar Sekarang
+                                </Link>
+                            </div>
                         </div>
                     </Disclosure.Panel>
                 </>

@@ -11,29 +11,24 @@ class Tanggapan extends Model
 
     protected $fillable = [
         'user_id',
-        'judul',
-        'deskripsi',
-        'kategori',
-        'foto',
-        'status',
-        'handled_by',
+        'pengaduan_id',
+        'isi_tanggapan',
+        'is_private',
     ];
 
-    // Relasi: laporan ini milik 1 user (warga)
+    protected $casts = [
+        'is_private' => 'boolean',
+    ];
+
+    // Relasi: tanggapan ini milik 1 user (RT / Lurah / Warga)
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Relasi: laporan bisa punya banyak tanggapan
-    public function tanggapans()
+    // Relasi: tanggapan ini milik 1 pengaduan
+    public function pengaduan()
     {
-        return $this->hasMany(Tanggapan::class);
-    }
-
-    // Relasi: laporan bisa ditangani oleh user lain (RT / Lurah)
-    public function handler()
-    {
-        return $this->belongsTo(User::class, 'handled_by');
+        return $this->belongsTo(Pengaduan::class, 'pengaduan_id');
     }
 }

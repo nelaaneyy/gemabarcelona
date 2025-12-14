@@ -70,11 +70,11 @@ class DashboardController extends Controller
         $statsQuery = Pengaduan::query();
 
         // Jika Lurah terikat pada suatu kelurahan, tambahkan filter di sini:
-        if ($lurahUser->nama_kelurahan) {
-            $statsQuery->whereHas('user', function($q) use ($lurahUser) {
-                $q->where('nama_kelurahan', $lurahUser->nama_kelurahan);
-            });
-        }
+        // if ($lurahUser->nama_kelurahan) {
+        //     $statsQuery->whereHas('user', function($q) use ($lurahUser) {
+        //         $q->where('nama_kelurahan', $lurahUser->nama_kelurahan);
+        //     });
+        // }
 
         $stats = $statsQuery->select(DB::raw('count(*) as total'))
             // "Dalam Perbaikan" = DIPROSES_RT
@@ -85,15 +85,15 @@ class DashboardController extends Controller
             ->selectRaw("count(case when status = 'DITOLAK' then 1 end) as ditolak")
             ->first();
 
-        // --- 2. Ambil Daftar Laporan (Fokus hanya pada yang 'DITERUSKAN_LURAH') ---
-        $laporansQuery = Pengaduan::where('status', 'DITERUSKAN_LURAH'); // Filter HANYA laporan eskalasi
+        // --- 2. Ambil Daftar Laporan (Fokus pada yang 'DITERUSKAN_LURAH' saja) ---
+        $laporansQuery = Pengaduan::where('status', 'DITERUSKAN_LURAH'); // Hanya filter laporan yang diteruskan
 
         // Jika ada filter kelurahan, terapkan di sini juga
-        if ($lurahUser->nama_kelurahan) {
-            $laporansQuery->whereHas('user', function($q) use ($lurahUser) {
-                $q->where('nama_kelurahan', $lurahUser->nama_kelurahan);
-            });
-        }
+        // if ($lurahUser->nama_kelurahan) {
+        //     $laporansQuery->whereHas('user', function($q) use ($lurahUser) {
+        //         $q->where('nama_kelurahan', $lurahUser->nama_kelurahan);
+        //     });
+        // }
 
         $laporans = $laporansQuery
             ->with('user:id,name,nomor_rt') // Ambil info pelapor

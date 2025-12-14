@@ -1,7 +1,7 @@
 // Ganti path import Navbar jika lokasi file Anda berbeda
 import Navbar from '@/Components/Navbar';
 
-export default function GuestLayout({ children }) {
+export default function GuestLayout({ children, navbarTheme = 'light' }) {
     const backgroundStyle = {
         background: 'linear-gradient(180deg, rgba(235, 227, 219, 1) 0%, rgba(200, 195, 185, 1) 100%)',
     };
@@ -9,13 +9,13 @@ export default function GuestLayout({ children }) {
     return (
         <div style={backgroundStyle} className="min-h-screen">
 
-            <Navbar />
+            <Navbar theme={navbarTheme} />
 
             <main>
                 {children}
             </main>
 
-            <footer/>
+            <footer />
         </div>
     );
 }

@@ -2,40 +2,36 @@
 
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, usePage } from '@inertiajs/react';
-// Import komponen RiwayatLaporan
-import RiwayatLaporan from '@/Pages/Warga/RiwayatLaporan'; // Sesuaikan path jika RiwayatLaporan ada di Pages/Warga
+import RiwayatLaporan from '@/Pages/Warga/RiwayatLaporan';
 
 export default function RiwayatIndex() {
-    // Ambil data 'auth' dan 'pengaduans' dari props
     const { auth, pengaduans } = usePage().props;
 
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Riwayat Laporan" />
 
-            <div className="py-12 bg-gray-100">
+            <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
                     {/* Header Halaman Riwayat */}
-                    <div className="mb-6 flex justify-between items-center">
+                    <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-4 sm:px-0">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900">
-                                Riwayat Laporan Anda
+                            <h1 className="text-3xl font-black text-white tracking-tight">
+                                Riwayat Laporan
                             </h1>
-                            <p className="mt-1 text-sm text-gray-600">
+                            <p className="mt-1 text-gray-400">
                                 Pantau status semua laporan Infrastruktur yang pernah Anda buat.
                             </p>
                         </div>
-                        {/* Tombol kembali ke Dashboard (Opsional) */}
                         <Link
                             href={route('warga.dashboard')}
-                            className="px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50"
+                            className="px-5 py-2.5 rounded-xl border border-white/10 text-sm font-bold text-gray-300 hover:text-white hover:bg-white/5 transition-all"
                         >
-                            Kembali ke Dashboard
+                            &larr; Kembali ke Dashboard
                         </Link>
                     </div>
 
-                    {/* Gunakan komponen RiwayatLaporan untuk menampilkan daftar */}
                     <RiwayatLaporan pengaduans={pengaduans} />
 
                 </div>

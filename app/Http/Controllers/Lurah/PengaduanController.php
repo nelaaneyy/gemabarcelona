@@ -49,11 +49,11 @@ class PengaduanController extends Controller
     public function updateStatus(Request $request, Pengaduan $pengaduan): RedirectResponse
     {
         // 1. Authorization
-        // (Pastikan Lurah yang login berhak memproses laporan ini, misalnya berdasarkan wilayah/kelurahan)
         // ...
 
         // Cek kondisi status saat ini
         if ($pengaduan->status === 'SELESAI' || $pengaduan->status === 'DITOLAK') {
+             \Illuminate\Support\Facades\Log::warning('UpdateStatus aborted: Already finished/rejected');
             return back()->withErrors(['status' => 'Laporan sudah ditutup dan tidak dapat diubah lagi.']);
         }
 
@@ -68,8 +68,26 @@ class PengaduanController extends Controller
 
         // 3. Update Status di Database
         $pengaduan->update(['status' => $validated['status']]);
+        \Illuminate\Support\Facades\Log::info('UpdateStatus success', ['new_status' => $pengaduan->status]);
 
         // 4. Redirect
-        return redirect()->route('lurah.pengaduan.show', $pengaduan)->with('success', 'Status laporan berhasil diperbarui!');
+        // Menggunakan back() agar tidak terjadi redirect loop, mirip dengan implementasi RT
+        return back()->with('success', 'Status laporan berhasil diperbarui!');
+    }
+
+    public function storeTanggapan(Request $request, Pengaduan $pengaduan): RedirectResponse
+    {
+        $validated = $request->validate([
+            'isi_tanggapan' => 'required|string|max:1000',
+            'is_private' => 'boolean',
+        ]);
+
+        $pengaduan->tanggapans()->create([
+            'user_id' => Auth::id(), // Pastikan ini menggunakan ID user yang sedang login (Lurah)
+            'isi_tanggapan' => $validated['isi_tanggapan'],
+            'is_private' => $validated['is_private'] ?? false,
+        ]);
+
+        return back()->with('success', 'Tanggapan berhasil dikirim.');
     }
 }

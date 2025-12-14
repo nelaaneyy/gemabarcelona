@@ -1,11 +1,9 @@
 // resources/js/Pages/Auth/Login.jsx
-
 import { useEffect } from 'react';
 import InputError from '@/Components/InputError';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Description, Field, Input, Label } from '@headlessui/react'
-import clsx from 'clsx'
-import { Button } from '@headlessui/react'
+import { Field, Input, Label, Button } from '@headlessui/react';
+import clsx from 'clsx';
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -27,101 +25,129 @@ export default function Login({ status, canResetPassword }) {
 
     return (
         <>
-            <Head title="Log in" />
-            
-            {/* 1. Container Utama (Layar Penuh, Flexbox, Padding Mobile) */}
-            <div 
-                className="min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-cover bg-center"
-                style={{ backgroundImage: "url('/image/barcelona1.png')" }} 
-            >
-                {/* 2. Overlay Gelap */}
-                <div className="absolute inset-0 bg-black opacity-30 z-0"></div>
+            <Head title="Masuk Akun" />
 
-                {/* 3. Kotak Form (Responsif: w-full di mobile, max-w-md di desktop) */}
-                <div className="relative z-10 w-full max-w-md bg-green-800 bg-opacity-75 backdrop-blur-md p-8 sm:p-10 text-white border border-white/20 rounded-2xl shadow-xl transition-all">
-                    
-                    <h1 className="text-white text-3xl font-bold text-center tracking-wider mb-2">
-                        GEMA
-                    </h1>
-                    <h2 className="text-white text-2xl font-light text-center mb-8">
-                        Selamat Datang!
-                    </h2>
-                    
-                    {status && <div className="mb-4 font-medium text-sm text-green-300">{status}</div>}
+            <div className="min-h-screen relative flex items-center justify-center overflow-hidden">
 
-                    <form onSubmit={submit} className="space-y-6">
-                        {/* Input Email */}
-                        <div className="w-full max-w-md px-4">
-                        <Field>
-                            <Label className="text-sm/6 font-medium text-white" htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                name="email"
-                                value={data.email}
-                                placeholder="Email address"
-                                className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black','focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
-                                autoComplete="username"
-                                onChange={(e) => setData('email', e.target.value)}
-                                required
-                            />
-                            <InputError message={errors.email} className="mt-2 text-yellow-300" />
-                        </Field>    
+                {/* 1. BACKGROUND IMAGE & OVERLAY GRADIENT */}
+                <div
+                    className="absolute inset-0 z-0 transform scale-105 transition-transform duration-[20s] ease-linear animate-slow-zoom"
+                    style={{
+                        backgroundImage: "url('/image/barcelona1.png')",
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                    }}
+                ></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-green-900/90 via-black/80 to-green-900/90 z-0"></div>
+
+                {/* 2. GLASS CARD CONTAINER */}
+                <div className="relative z-10 w-full max-w-lg px-6">
+                    <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 sm:p-12 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] transition-all hover:border-white/30">
+
+                        {/* HEADER */}
+                        <div className="text-center mb-10">
+                            <h1 className="text-4xl font-black text-white tracking-widest mb-2 drop-shadow-md">
+                                GEMA
+                            </h1>
+                            <p className="text-green-100 text-lg font-light tracking-wide">
+                                Selamat Datang Kembali
+                            </p>
                         </div>
 
-                        {/* Input Password */}
-                        <div className="w-full max-w-md px-4">
+                        {/* STATUS MESSAGE */}
+                        {status && (
+                            <div className={`mb-6 p-4 rounded-xl border ${status.includes('DINONAKTIFKAN') ? 'bg-red-500/20 border-red-500/50 text-red-100 font-bold' : 'bg-green-500/20 border-green-500/50 text-green-100 font-medium'} text-center backdrop-blur-sm`}>
+                                {status.includes('DINONAKTIFKAN') ? status.replace('DINONAKTIFKAN', 'DINONAKTIFKAN') : status}
+                            </div>
+                        )}
+
+                        <form onSubmit={submit} className="space-y-6">
+
+                            {/* EMAIL */}
                             <Field>
-                            <Label className="text-sm/6 font-medium text-white" htmlFor="password" >Password</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                name="password"
-                                value={data.password}
-                                placeholder="Password"
-                                className={clsx('mt-3 block w-full rounded-lg border-none bg-white/2 px-3 py-1.5 text-sm/6 text-black','focus:not-data-focus:outline-none data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25')}
-                                autoComplete="current-password" 
-                                onChange={(e) => setData('password', e.target.value)}
-                                required
-                            />
-                            <InputError message={errors.password} className="mt-2 text-yellow-300" />
+                                <Label htmlFor="email" className="block text-sm font-medium text-green-50 mb-2 ml-1">Email / NIK</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    value={data.email}
+                                    onChange={(e) => setData('email', e.target.value)}
+                                    placeholder="contoh@email.com"
+                                    className={clsx(
+                                        'block w-full rounded-xl bg-white/10 border border-white/10 px-4 py-3.5 text-white placeholder-white/30',
+                                        'focus:bg-white/20 focus:border-green-400 focus:ring-2 focus:ring-green-400/50 outline-none transition-all duration-300',
+                                        'hover:bg-white/15'
+                                    )}
+                                    autoComplete="username"
+                                    required
+                                />
+                                <InputError message={errors.email} className="mt-2 ml-1 text-red-300 font-medium" />
                             </Field>
-                            
-                        </div>
 
-                        {/* Forgot Password Link */}
-                        <div className="flex items-center justify-end">
-                            {canResetPassword && (
-                                <Link
-                                    href={route('password.request')}
-                                    className="text-sm text-white hover:text-gray-300 hover:underline transition-colors duration-200"
-                                >
-                                    forgot password?
-                                </Link>
-                            )}
-                        </div>
+                            {/* PASSWORD */}
+                            <Field>
+                                <div className="flex justify-between items-center mb-2 ml-1">
+                                    <Label htmlFor="password" className="block text-sm font-medium text-green-50">Password</Label>
+                                    {canResetPassword && (
+                                        <Link
+                                            href={route('password.request')}
+                                            className="text-xs text-green-300 hover:text-white transition-colors"
+                                        >
+                                            Lupa Password?
+                                        </Link>
+                                    )}
+                                </div>
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    value={data.password}
+                                    onChange={(e) => setData('password', e.target.value)}
+                                    placeholder="••••••••"
+                                    className={clsx(
+                                        'block w-full rounded-xl bg-white/10 border border-white/10 px-4 py-3.5 text-white placeholder-white/30',
+                                        'focus:bg-white/20 focus:border-green-400 focus:ring-2 focus:ring-green-400/50 outline-none transition-all duration-300',
+                                        'hover:bg-white/15'
+                                    )}
+                                    autoComplete="current-password"
+                                    required
+                                />
+                                <InputError message={errors.password} className="mt-2 ml-1 text-red-300 font-medium" />
+                            </Field>
 
-                        {/* Tombol Masuk (Log In) */}
-                        <div className="w-full max-w-md px-4">
-                            <Button 
+                            {/* SUBMIT BUTTON */}
+                            <Button
                                 type="submit"
-                                className="w-full items-center gap-2 rounded-md bg-blue-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-hover:bg-blue-600 data-open:bg-blue-700 transition-all duration-200 ease-in-out transform hover:-translate-y-0.5 active:translate-y-0" 
                                 disabled={processing}
+                                className={clsx(
+                                    'w-full flex justify-center py-4 px-4 border border-transparent rounded-xl shadow-lg text-lg font-bold text-white bg-gradient-to-r from-green-600 to-green-500',
+                                    'hover:from-green-500 hover:to-green-400 hover:shadow-green-500/30 transform hover:-translate-y-1',
+                                    'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300',
+                                    processing && 'opacity-75 cursor-not-allowed'
+                                )}
                             >
-                                Masuk
+                                {processing ? 'Memproses...' : 'Masuk Sekarang'}
                             </Button>
-                        </div>
 
-                        {/* Link ke Halaman Register */}
-                        <div className="text-center">
-                            <Link
-                                href={route('register')}
-                                className="text-sm text-white hover:text-gray-300 hover:underline transition-colors duration-200"
-                            >
-                                Belum punya akun? <span className="font-semibold">Daftar di sini</span>
-                            </Link>
-                        </div>
-                    </form>
+                            {/* REGISTER LINK */}
+                            <div className="text-center mt-8">
+                                <p className="text-sm text-green-100/80">
+                                    Belum memiliki akun?{' '}
+                                    <Link
+                                        href={route('register')}
+                                        className="font-bold text-white hover:text-green-300 underline decoration-green-300/50 hover:decoration-green-300 transition-all"
+                                    >
+                                        Daftar di sini
+                                    </Link>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+
+                    {/* FOOTER TEXT */}
+                    <div className="text-center mt-8 relative z-10">
+                        <p className="text-xs text-white/40 tracking-wider">
+                            &copy; 2025 GEMA Perumahan Barcelona
+                        </p>
+                    </div>
                 </div>
             </div>
         </>

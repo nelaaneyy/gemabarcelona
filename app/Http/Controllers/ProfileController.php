@@ -20,7 +20,10 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        return Inertia::render('Profile/Edit', [
+        // Tentukan view berdasarkan role
+        $view = $user->hasRole('warga') ? 'Profile/EditWarga' : 'Profile/Edit';
+
+        return Inertia::render($view, [
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
         ]);

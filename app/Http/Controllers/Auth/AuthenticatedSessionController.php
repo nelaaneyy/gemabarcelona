@@ -35,6 +35,15 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
+        // CHECK ACTIVE STATUS
+        if (! $user->is_active) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')->with('status', 'AKUN DINONAKTIFKAN: ' . ($user->deactivation_reason ?? 'Hubungi RT.'));
+        }
+
         if ($user->role === 'warga') {
             return redirect()->route('warga.dashboard');
         } elseif ($user->role === 'rt') {

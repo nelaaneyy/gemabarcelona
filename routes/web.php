@@ -11,6 +11,7 @@ use App\Http\Controllers\PengaduanController;
 use App\Http\Controllers\Rt\PengaduanController as RtPengaduanController;
 use App\Http\Controllers\Lurah\PengaduanController as LurahPengaduanController;
 use App\Http\Controllers\Rt\TanggapanController;
+use App\Http\Controllers\Rt\WargaController;
 
 use Inertia\Inertia;
 
@@ -20,6 +21,14 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('HomePage');
 })->name('homepage');
+
+Route::get('/tentang-kami', function () {
+    return Inertia::render('TentangKami');
+})->name('tentang-kami');
+
+Route::get('/layanan', function () {
+    return Inertia::render('Layanan');
+})->name('layanan');
 
 // Rute Redirect Dashboard (setelah login)
 Route::get('/dashboard', [DashboardRedirectController::class, 'index'])
@@ -67,6 +76,10 @@ Route::middleware('auth')->group(function () {
 
             // Tanggapan oleh RT
             Route::post('/laporan/{laporan}/tanggapan', [TanggapanController::class, 'store'])->name('laporan.tanggapan.store');
+
+            // Manajemen Warga (RT Only)
+            Route::get('/warga', [WargaController::class, 'index'])->name('warga.index');
+            Route::post('/warga/{user}/toggle', [WargaController::class, 'toggleStatus'])->name('warga.toggle');
         });
 
         // --- RUTE LURAH (Role: lurah) ---
@@ -75,7 +88,7 @@ Route::middleware('auth')->group(function () {
 
             // Pengaduan untuk Lurah
             Route::get('/pengaduan/{pengaduan}', [LurahPengaduanController::class, 'show'])->name('pengaduan.show');
-            Route::patch('/pengaduan/{pengaduan}/proses', [LurahPengaduanController::class, 'updateStatus'])->name('pengaduan.updateStatus');
+            Route::post('/pengaduan/{pengaduan}/proses', [LurahPengaduanController::class, 'updateStatus'])->name('pengaduan.updateStatus');
 
             // Tanggapan oleh Lurah
             Route::post('/pengaduan/{pengaduan}/tanggapan', [LurahPengaduanController::class, 'storeTanggapan'])->name('pengaduan.tanggapan.store');
