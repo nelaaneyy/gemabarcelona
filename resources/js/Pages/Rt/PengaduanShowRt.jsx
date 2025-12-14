@@ -1,47 +1,37 @@
-import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import InputError from '@/Components/InputError'; // Pastikan path benar
-import PrimaryButton from '@/Components/PrimaryButton'; // Pastikan path benar
-import { useState, Fragment } from 'react';
-import { Dialog, Transition } from '@headlessui/react'; // Diperlukan untuk Modal
+// resources/js/Pages/Rt/PengaduanShowRt.jsx
 
-// Fungsi bantuan untuk style status
+import AdminLayout from '@/Layouts/AdminLayout'; // Pastikan AdminLayout juga sudah Dark Mode atau gunakan AuthenticatedLayout jika sama
+import { Head, Link, useForm, usePage, router } from '@inertiajs/react';
+import InputError from '@/Components/InputError';
+import PrimaryButton from '@/Components/PrimaryButton';
+import { useState, Fragment } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+
 const getStatusStyles = (status) => {
     switch (status) {
-        case 'BARU': return 'bg-blue-100 text-blue-800';
-        case 'DIPROSES_RT': return 'bg-yellow-100 text-yellow-800';
-        case 'DITERUSKAN_LURAH': return 'bg-purple-100 text-purple-800';
-        case 'SELESAI': return 'bg-green-100 text-green-800';
-        case 'DITOLAK': return 'bg-red-100 text-red-800';
-        default: return 'bg-gray-100 text-gray-800';
+        case 'BARU': return 'bg-blue-500/20 text-blue-300 border-blue-500/50';
+        case 'DIPROSES_RT': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50';
+        case 'DITERUSKAN_LURAH': return 'bg-purple-500/20 text-purple-300 border-purple-500/50';
+        case 'SELESAI': return 'bg-green-500/20 text-green-300 border-green-500/50';
+        case 'DITOLAK': return 'bg-red-500/20 text-red-300 border-red-500/50';
+        default: return 'bg-gray-500/20 text-gray-300 border-gray-500/50';
     }
 };
 
 export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
     const { flash } = usePage().props;
-
-    // State untuk mengontrol panel aksi yang aktif: 'status', 'catatan', atau null
     const [actionState, setActionState] = useState(null);
-
-    // State untuk mengontrol Modal Konfirmasi Teruskan ke Lurah
     const [isLurahModalOpen, setIsLurahModalOpen] = useState(false);
 
-    // Form untuk Update Status (KOREKSI: patch DITAMBAHKAN ke destructuring)
     const {
-        data: statusData,
-        setData: setStatusData,
-        patch, // <<< INI YANG DITAMBAHKAN >>>
         processing: statusProcessing,
+        post,
         errors: statusErrors
-    } = useForm({
-        status: pengaduan.status,
-    });
-
-    // Form untuk Tanggapan/Catatan Baru
+    } = useForm({});
     const {
         data: catData,
         setData: setCatData,
-        post: postCat, // post sudah di-alias ke postCat
+        post: postCat,
         processing: catProcessing,
         errors: catErrors,
         reset: resetCat
@@ -50,259 +40,251 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
         is_private: false,
     });
 
+    const [processingId, setProcessingId] = useState(null);
 
-    // --- HANDLER MODAL ---
     function closeLurahModal() { setIsLurahModalOpen(false); }
     function openLurahModal() { setIsLurahModalOpen(true); }
 
-    // --- HANDLER SUBMIT UTAMA ---
+    const handleStatusUpdate = (newStatus, actionName) => {
+        setProcessingId(actionName);
+        const url = route('rt.laporan.proses', pengaduan.id);
 
-    // Handler submit Status (via panel radio button)
-    const handleUpdateStatus = (e) => {
-    e.preventDefault();
+        router.post(url, { status: newStatus }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setProcessingId(null);
+                setActionState(null);
+            },
+            onError: (errors) => {
+                setProcessingId(null);
+                console.error("Status Update Failed:", errors);
+                alert(`Gagal mengubah status: ${JSON.stringify(errors, null, 2)}`);
+            },
+            onFinish: () => setProcessingId(null),
+        });
+    };
 
-    let url;
-    try {
-        // COBA PAKAI ROUTE HELPER (PALING ANDAL)
-        url = route('rt.laporan.proses', pengaduan.id);
-    } catch (e) {
-        // Jika Ziggy gagal, pakai string literal sebagai fallback
-        url = `/rt/laporan/${pengaduan.id}/proses`;
-    }
+    const handleFinish = () => {
+        handleStatusUpdate('SELESAI', 'finish');
+    };
 
-    // DEBUGGING: Log URL sebelum dikirim
-    console.log("Mengirim PATCH ke URL:", url); // <<< LIHAT INI DI KONSOL!
+    const handleEscalateToLurah = () => {
+        closeLurahModal();
+        handleStatusUpdate('DITERUSKAN_LURAH', 'escalate');
+    };
 
-    patch(url, {
-        status: statusData.status
-    }, {
-        preserveScroll: true,
-        onSuccess: () => setActionState(null),
-        onError: (err) => console.error("Update Status failed:", err),
-    });
-};
-
-    // Handler submit Tanggapan/Catatan
-        const handleAddCatatan = (e) => {
+    const handleAddCatatan = (e) => {
         e.preventDefault();
+        const url = route('rt.laporan.tanggapan.store', pengaduan.id);
 
-        // Menggunakan STRING LITERAL yang dijamin benar
-        const url = `/rt/laporan/${pengaduan.id}/tanggapan`;
-
-    // Kirim catData secara eksplisit untuk memastikan validasi bekerja
         postCat(url, catData, {
             onSuccess: () => {
                 resetCat();
                 setActionState(null);
             },
-            // Pastikan Anda melihat log error konsol jika ada kegagalan validasi
-            onError: (err) => console.error("Validation/Server Error:", err),
+            onError: (err) => {
+                console.error("Validation/Server Error:", err);
+                alert(`Gagal mengirim catatan: ${JSON.stringify(err, null, 2)}`);
+            },
         });
     };
 
-    const handleEscalateToLurah = () => {
-    closeLurahModal();
-
-    let url;
-    try {
-        url = route('rt.laporan.proses', pengaduan.id);
-    } catch (e) {
-        url = `/rt/laporan/${pengaduan.id}/proses`;
-    }
-
-    console.log("Mengirim PATCH Escalate ke URL:", url);
-
-    patch(url, { status: 'DITERUSKAN_LURAH' }, { /* ... */ });
-};
-
-    // Data tampilan
     const formattedTanggalKejadian = new Date(pengaduan.tanggal_kejadian).toLocaleDateString('id-ID', { dateStyle: 'long' });
     const formattedTanggalLapor = new Date(pengaduan.created_at).toLocaleDateString('id-ID', { dateStyle: 'long' });
-    const fotoUrl = pengaduan.foto ? `/storage/${pengaduan.foto}` : 'https://via.placeholder.com/600x400/E5E7EB/9CA3AF?text=Tidak+Ada+Foto';
-    const statusBgColor = getStatusStyles(pengaduan.status);
-    const isEscalated = pengaduan.status === 'DITERUSKAN_LURAH'; // Status untuk disable tombol
+    const fotoUrl = pengaduan.foto ? `/storage/${pengaduan.foto}` : 'https://via.placeholder.com/600x400/000000/333333?text=Tidak+Ada+Foto';
+    const statusStyle = getStatusStyles(pengaduan.status);
 
+    const isFinishedOrEscalated = pengaduan.status === 'SELESAI' || pengaduan.status === 'DITERUSKAN_LURAH';
+    const isProcessing = pengaduan.status === 'DIPROSES_RT';
 
     return (
         <AdminLayout user={auth.user}>
             <Head title={`Detail Laporan: ${pengaduan.judul}`} />
 
-            <div className="p-6 sm:p-8 lg:p-12">
-                <div className="max-w-4xl mx-auto">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div className="py-12">
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+                    {/* Breadcrumb */}
+                    <div className="mb-6 flex items-center gap-2 text-sm text-gray-400 px-4 sm:px-0">
+                        <Link href={route('rt.dashboard')} className="hover:text-white transition-colors">Dashboard RT</Link>
+                        <span>/</span>
+                        <span className="text-white">Detail Laporan Warga</span>
+                    </div>
+
+                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 overflow-hidden shadow-2xl sm:rounded-3xl relative">
 
                         {/* Header */}
-                        <div className="p-6 sm:p-8 border-b border-gray-200 flex justify-between items-center">
-                           <div>
-                                <h2 className="text-2xl font-semibold text-gray-900">
+                        <div className="p-6 sm:p-10 border-b border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                                <h2 className="text-3xl font-black text-white">
                                     Detail Laporan
                                 </h2>
-                                <p className="mt-1 text-sm text-gray-600">
-                                    Laporan dari: {pengaduan.user?.name ?? 'Warga'} (RT {pengaduan.user?.nomor_rt ?? 'N/A'})
+                                <p className="mt-1 text-gray-400">
+                                    Laporan dari: <span className="text-green-400 font-bold">{pengaduan.user?.name ?? 'Warga'}</span> (RT {pengaduan.user?.nomor_rt ?? 'N/A'})
                                 </p>
                             </div>
-                             <Link
-                                href={route('rt.dashboard')}
-                                className="text-sm text-indigo-600 hover:text-indigo-900"
-                            >
-                                &larr; Kembali ke Dashboard
-                            </Link>
+                            <div className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border ${statusStyle} backdrop-blur-md`}>
+                                {pengaduan.status.replace('_', ' ')}
+                            </div>
                         </div>
 
-                        {/* Konten Detail */}
-                        <div className="p-6 sm:p-8">
-                             {flash?.success && (
-                                <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md">
+                        <div className="p-6 sm:p-10">
+                            {flash?.success && (
+                                <div className="mb-6 p-4 bg-green-500/10 border border-green-500/30 text-green-300 rounded-xl">
                                     {flash.success}
                                 </div>
                             )}
 
-                            <div className="mb-6 rounded-lg overflow-hidden border border-gray-200">
-                                <img src={fotoUrl} alt={`Foto ${pengaduan.judul}`} className="w-full h-auto object-contain max-h-96 bg-gray-50" />
-                            </div>
-                            <div className="space-y-4">
-                                <h3 className="text-2xl font-semibold text-gray-800">{pengaduan.judul}</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                {/* Kiri: Foto */}
                                 <div>
-                                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${statusBgColor}`}>
-                                        Status: {pengaduan.status.replace('_', ' ')}
-                                    </span>
-                                </div>
-                                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
-                                    <div className="sm:col-span-1"><dt className="font-medium text-gray-500">Nama Pelapor Asli</dt><dd className="mt-1 text-gray-900">{pengaduan.nama_pelapor}</dd></div>
-                                    <div className="sm:col-span-1"><dt className="font-medium text-gray-500">Tanggal Kejadian</dt><dd className="mt-1 text-gray-900">{formattedTanggalKejadian}</dd></div>
-                                    <div className="sm:col-span-1"><dt className="font-medium text-gray-500">No. HP</dt><dd className="mt-1 text-gray-900">{pengaduan.no_hp || '-'}</dd></div>
-                                    <div className="sm:col-span-1"><dt className="font-medium text-gray-500">Tanggal Lapor</dt><dd className="mt-1 text-gray-900">{formattedTanggalLapor}</dd></div>
-                                    <div className="sm:col-span-2"><dt className="font-medium text-gray-500">Alamat Kejadian</dt><dd className="mt-1 text-gray-900">{pengaduan.alamat_kejadian}</dd></div>
-                                    <div className="sm:col-span-2"><dt className="font-medium text-gray-500">Deskripsi</dt><dd className="mt-1 text-gray-900 whitespace-pre-wrap">{pengaduan.isi_laporan}</dd></div>
-                                </dl>
-                            </div>
-
-                            {/* --- BAGIAN AKSI RT BARU --- */}
-                            <div className="mt-8 pt-6 border-t border-gray-200">
-                                <h4 className="text-lg font-medium text-gray-900 mb-4">Aksi Laporan</h4>
-
-                                {/* Tombol Aksi - Sesuai Design Anda */}
-                                <div className="flex space-x-3 mb-4">
-                                    <PrimaryButton
-                                        onClick={() => setActionState(actionState === 'status' ? null : 'status')}
-                                        className={actionState === 'status' ? 'bg-indigo-700' : 'bg-indigo-600'}
-                                        disabled={isEscalated}
-                                    >
-                                        Perbarui Status
-                                    </PrimaryButton>
-
-                                    <PrimaryButton
-                                        onClick={() => setActionState(actionState === 'catatan' ? null : 'catatan')}
-                                        className={actionState === 'catatan' ? 'bg-green-700' : 'bg-green-600'}
-                                    >
-                                        Tambah Catatan
-                                    </PrimaryButton>
-
-                                    <PrimaryButton
-                                        onClick={openLurahModal} // <-- Panggil modal konfirmasi
-                                        className="bg-red-500 hover:bg-red-600"
-                                        disabled={isEscalated}
-                                    >
-                                        Teruskan ke Kelurahan
-                                    </PrimaryButton>
+                                    <div className="rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-black/50 group">
+                                        <img src={fotoUrl} alt={`Foto ${pengaduan.judul}`} className="w-full h-auto object-contain max-h-[500px]" />
+                                    </div>
+                                    <p className="text-center text-xs text-gray-500 mt-2">Gambar Bukti Laporan</p>
                                 </div>
 
-                                {/* --- PANEL GANTI STATUS --- */}
-                                {actionState === 'status' && (
-                                    <div className="bg-gray-50 p-4 border border-indigo-200 rounded-lg">
-                                        <h5 className="font-semibold mb-3 text-gray-700">Pilih Status Baru:</h5>
-                                        <form onSubmit={handleUpdateStatus} className="space-y-3">
-                                            {['BARU', 'DIPROSES_RT', 'SELESAI', 'DITOLAK'].map(statusVal => (
-                                                <label key={statusVal} className="flex items-center space-x-2 text-gray-700 cursor-pointer">
-                                                    <input
-                                                        type="radio"
-                                                        name="status"
-                                                        value={statusVal}
-                                                        checked={statusData.status === statusVal}
-                                                        onChange={(e) => setStatusData('status', e.target.value)}
-                                                        className="form-radio text-indigo-600"
+                                {/* Kanan: Info & Aksi */}
+                                <div className="space-y-8">
+
+                                    {/* Judul & Desc */}
+                                    <div>
+                                        <h3 className="text-2xl font-bold text-white mb-2">{pengaduan.judul}</h3>
+                                        <div className="bg-white/5 rounded-xl p-4 border border-white/5 text-gray-300 whitespace-pre-wrap">
+                                            {pengaduan.isi_laporan}
+                                        </div>
+                                    </div>
+
+                                    {/* Data Grid */}
+                                    <div className="bg-white/5 rounded-xl border border-white/5 divide-y divide-white/5 text-sm">
+                                        <div className="p-3 grid grid-cols-2">
+                                            <span className="text-gray-500">Pelapor</span>
+                                            <span className="text-white text-right">{pengaduan.nama_pelapor}</span>
+                                        </div>
+                                        <div className="p-3 grid grid-cols-2">
+                                            <span className="text-gray-500">Tgl. Kejadian</span>
+                                            <span className="text-white text-right">{formattedTanggalKejadian}</span>
+                                        </div>
+                                        <div className="p-3 grid grid-cols-2">
+                                            <span className="text-gray-500">No. HP</span>
+                                            <span className="text-white text-right">{pengaduan.no_hp || '-'}</span>
+                                        </div>
+                                        <div className="p-3 grid grid-cols-2">
+                                            <span className="text-gray-500">Lokasi</span>
+                                            <span className="text-white text-right">{pengaduan.alamat_kejadian}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* --- AREA AKSI RT --- */}
+                                    <div className="mt-8 pt-6 border-t border-white/10">
+                                        <h4 className="text-lg font-bold text-white mb-4">Aksi Penanganan RT</h4>
+
+                                        {!isFinishedOrEscalated ? (
+                                            <div className="flex flex-wrap gap-3 mb-4">
+                                                {/* TOMBOL SELESAI */}
+                                                {isProcessing && (
+                                                    <PrimaryButton
+                                                        onClick={handleFinish}
+                                                        className="bg-green-600 hover:bg-green-500 border-none"
+                                                        disabled={processingId === 'finish'}
+                                                    >
+                                                        {processingId === 'finish' ? 'Memproses...' : '✅ Tandai Selesai'}
+                                                    </PrimaryButton>
+                                                )}
+
+                                                <button
+                                                    onClick={() => setActionState(actionState === 'catatan' ? null : 'catatan')}
+                                                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${actionState === 'catatan' ? 'bg-white text-black' : 'bg-white/10 text-white hover:bg-white/20'}`}
+                                                    disabled={!!processingId}
+                                                >
+                                                    📝 Catatan / Tanggapan
+                                                </button>
+
+                                                <button
+                                                    onClick={openLurahModal}
+                                                    className="px-4 py-2 rounded-lg text-sm font-bold bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500/30 transition-colors"
+                                                    disabled={!!processingId}
+                                                >
+                                                    ⚠️ Teruskan ke Lurah
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="p-4 bg-white/5 rounded-xl border border-white/10 text-center">
+                                                <p className="text-gray-400">Laporan ini telah ditutup dengan status:</p>
+                                                <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-bold ${statusStyle}`}>{pengaduan.status.replace('_', ' ')}</span>
+                                            </div>
+                                        )}
+
+                                        {statusErrors.status && <p className="text-sm text-red-400 mt-2">{statusErrors.status}</p>}
+
+                                        {/* FORM CATATAN */}
+                                        {actionState === 'catatan' && (
+                                            <div className="bg-black/40 p-5 border border-white/10 rounded-xl mt-4 animate-fadeIn">
+                                                <h5 className="font-bold text-white mb-3">Tulis Catatan / Tanggapan</h5>
+                                                <form onSubmit={handleAddCatatan} className="space-y-4">
+                                                    <textarea
+                                                        value={catData.isi_tanggapan}
+                                                        onChange={(e) => setCatData('isi_tanggapan', e.target.value)}
+                                                        placeholder="Tulis detail penanganan atau tanggapan untuk warga..."
+                                                        rows="4"
+                                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder-gray-500 focus:ring-green-500 focus:border-green-500"
+                                                        required
                                                     />
-                                                    <span>{statusVal.replace('_', ' ')}</span>
-                                                </label>
+                                                    <InputError message={catErrors.isi_tanggapan} className="mt-1" />
+
+                                                    <div className="flex items-center space-x-2">
+                                                        <input
+                                                            type="checkbox"
+                                                            id="is_private"
+                                                            checked={catData.is_private}
+                                                            onChange={(e) => setCatData('is_private', e.target.checked)}
+                                                            className="rounded bg-white/10 border-white/20 text-green-500 focus:ring-green-500"
+                                                        />
+                                                        <label htmlFor="is_private" className="text-sm text-gray-300">
+                                                            Simpan sebagai Catatan Pribadi (Hanya RT)
+                                                        </label>
+                                                    </div>
+
+                                                    <div className="pt-2 flex justify-end">
+                                                        <PrimaryButton className="bg-white text-black hover:bg-gray-200 border-none" disabled={catProcessing}>
+                                                            Kirim Catatan
+                                                        </PrimaryButton>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* RIWAYAT TANGGAPAN */}
+                                    <div className="pt-6 border-t border-white/10">
+                                        <h4 className="text-lg font-bold text-white mb-4">Riwayat Aktivitas ({tanggapans?.length ?? 0})</h4>
+                                        <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                                            {tanggapans && tanggapans.map(t => (
+                                                <div key={t.id} className="bg-white/5 p-4 rounded-xl border-l-4 border-green-500 text-sm">
+                                                    <div className="flex justify-between items-start mb-1">
+                                                        <span className="font-bold text-green-400">RT {t.user.nomor_rt}</span>
+                                                        <span className="text-xs text-gray-500">{new Date(t.created_at).toLocaleDateString('id-ID')}</span>
+                                                    </div>
+                                                    <p className="text-gray-300 whitespace-pre-wrap">{t.isi_tanggapan}</p>
+                                                    {t.is_private && <span className="text-xs text-red-400/80 font-bold block mt-2">🔒 Catatan Internal</span>}
+                                                </div>
                                             ))}
-
-                                            <InputError message={statusErrors.status} className="mt-2" />
-
-                                            <div className="pt-3">
-                                                <PrimaryButton disabled={statusProcessing || statusData.status === pengaduan.status}>
-                                                    Simpan Status
-                                                </PrimaryButton>
-                                            </div>
-                                        </form>
+                                            {tanggapans?.length === 0 && (
+                                                <p className="text-gray-600 text-sm italic">Belum ada catatan aktivitas.</p>
+                                            )}
+                                        </div>
                                     </div>
-                                )}
 
-                                {/* --- PANEL TAMBAH CATATAN/TANGGAPAN --- */}
-                                {actionState === 'catatan' && (
-                                    <div className="bg-gray-50 p-4 border border-green-200 rounded-lg">
-                                        <h5 className="font-semibold mb-3 text-gray-700">Tambahkan Catatan Resmi:</h5>
-                                        <form onSubmit={handleAddCatatan} className="space-y-3">
-
-                                            <textarea
-                                                value={catData.isi_tanggapan}
-                                                onChange={(e) => setCatData('isi_tanggapan', e.target.value)}
-                                                placeholder="Tulis tanggapan atau catatan..."
-                                                rows="4"
-                                                className="w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500"
-                                                required
-                                            />
-                                            <InputError message={catErrors.isi_tanggapan} className="mt-2" />
-
-                                            <div className="flex items-center space-x-2">
-                                                <input
-                                                    type="checkbox"
-                                                    id="is_private"
-                                                    checked={catData.is_private}
-                                                    onChange={(e) => setCatData('is_private', e.target.checked)}
-                                                    className="form-checkbox text-green-600 rounded"
-                                                />
-                                                <label htmlFor="is_private" className="text-sm text-gray-700">Catatan ini hanya untuk arsip RT (Tidak ditampilkan ke Warga)</label>
-                                            </div>
-
-                                            <div className="pt-3">
-                                                <PrimaryButton className="bg-green-600 hover:bg-green-700" disabled={catProcessing}>
-                                                    Kirim Catatan
-                                                </PrimaryButton>
-                                            </div>
-                                        </form>
-                                    </div>
-                                )}
-
+                                </div>
                             </div>
-                            {/* --- BATAS BAGIAN AKSI RT --- */}
-
-                            {/* --- AREA TANGGAPAN/RIWAYAT --- */}
-                            <div className="mt-8 pt-6 border-t border-gray-200">
-                                <h4 className="text-lg font-medium text-gray-900 mb-4">Riwayat Tanggapan ({tanggapans?.length ?? 0})</h4>
-
-                                {tanggapans && tanggapans.map(t => (
-                                    <div key={t.id} className="bg-gray-100 p-3 rounded-lg border-l-4 border-gray-400 mb-3 text-sm">
-                                        <p className="font-semibold text-gray-800">Dari RT {t.user.nomor_rt} pada {new Date(t.created_at).toLocaleDateString('id-ID')}</p>
-                                        <p className="mt-1 whitespace-pre-wrap">{t.isi_tanggapan}</p>
-                                        {t.is_private && <span className="text-xs text-red-500 font-medium"> (Catatan Pribadi RT)</span>}
-                                    </div>
-                                ))}
-                                {tanggapans?.length === 0 && (
-                                     <p className="text-gray-500 text-sm">Belum ada catatan atau tanggapan resmi untuk laporan ini.</p>
-                                )}
-                            </div>
-                            {/* --- BATAS AREA TANGGAPAN/RIWAYAT --- */}
-
-
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* --- MODAL KONFIRMASI TERUSKAN KE LURAH --- */}
+            {/* Modal Teruskan ke Lurah */}
             <Transition appear show={isLurahModalOpen} as={Fragment}>
                 <Dialog as="div" className="relative z-50" onClose={closeLurahModal}>
-                    {/* Overlay */}
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -312,10 +294,9 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <div className="fixed inset-0 bg-black/30" />
+                        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
                     </Transition.Child>
 
-                    {/* Konten Modal */}
                     <div className="fixed inset-0 overflow-y-auto">
                         <div className="flex min-h-full items-center justify-center p-4 text-center">
                             <Transition.Child
@@ -327,35 +308,31 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <Dialog.Panel className="w-full max-w-sm transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
-                                    <Dialog.Title
-                                        as="h3"
-                                        className="text-lg font-medium leading-6 text-gray-900"
-                                    >
-                                        Laporan di Teruskan ke Kelurahan!
+                                <Dialog.Panel className="w-full max-w-sm transform overflow-hidden rounded-2xl bg-gray-900 border border-white/10 p-6 text-left align-middle shadow-xl transition-all">
+                                    <Dialog.Title as="h3" className="text-lg font-bold leading-6 text-white">
+                                        Teruskan ke Kelurahan?
                                     </Dialog.Title>
-
                                     <div className="mt-2">
-                                        <p className="text-sm text-gray-500">
-                                            Laporan warga tidak ditangani oleh kelurahan RT. Apabila sudah yakin, silakan lanjutkan proses ini.
+                                        <p className="text-sm text-gray-300">
+                                            Laporan ini akan dialihkan wewenangnya ke Lurah. Anda tidak dapat lagi memproses laporan ini setelah diteruskan.
                                         </p>
                                     </div>
 
-                                    <div className="mt-4 flex justify-end">
+                                    <div className="mt-6 flex justify-end space-x-3">
                                         <button
                                             type="button"
-                                            className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
-                                            onClick={handleEscalateToLurah}
-                                            disabled={statusProcessing} // Gunakan processing dari form status
-                                        >
-                                            Selesai
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 ml-3 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
+                                            className="inline-flex justify-center rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white hover:bg-white/10 focus:outline-none"
                                             onClick={closeLurahModal}
                                         >
                                             Batal
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="inline-flex justify-center rounded-lg border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                                            onClick={handleEscalateToLurah}
+                                            disabled={statusProcessing}
+                                        >
+                                            Ya, Teruskan
                                         </button>
                                     </div>
                                 </Dialog.Panel>
@@ -364,7 +341,6 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
                     </div>
                 </Dialog>
             </Transition>
-            {/* --- BATAS MODAL KONFIRMASI --- */}
         </AdminLayout>
     );
 }

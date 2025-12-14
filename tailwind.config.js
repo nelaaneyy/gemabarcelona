@@ -1,5 +1,6 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
+import scrollbarHide from 'tailwind-scrollbar-hide';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -24,11 +25,11 @@ export default {
             // --- TAMBAHKAN KEYFRAMES DI SINI ---
             keyframes: {
                 'pop-in': {
-                    '0%': { 
+                    '0%': {
                         transform: 'scale(0.5)', // Mulai dari setengah ukuran
                         opacity: '0',           // Mulai dari transparan
                     },
-                    '100%': { 
+                    '100%': {
                         transform: 'scale(1)',   // Selesai di ukuran normal
                         opacity: '1',           // Selesai dengan terlihat penuh
                     },
@@ -41,10 +42,10 @@ export default {
                 // Durasi 0.5 detik
                 // Easing 'ease-out' (cepat di awal, lambat di akhir)
                 // 'forwards' agar tetap di state akhir setelah animasi selesai
-                'pop-in': 'pop-in 0.5s ease-out forwards', 
+                'pop-in': 'pop-in 0.5s ease-out forwards',
             },
         },
     },
 
-    plugins: [require('@tailwindcss/forms')],
+    plugins: [forms, scrollbarHide],
 };

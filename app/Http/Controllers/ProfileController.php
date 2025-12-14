@@ -18,8 +18,13 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
-        return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+        $user = $request->user();
+
+        // Tentukan view berdasarkan role
+        $view = $user->hasRole('warga') ? 'Profile/EditWarga' : 'Profile/Edit';
+
+        return Inertia::render($view, [
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
         ]);
     }
@@ -60,4 +65,26 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+    public function deactivate(Request $request): RedirectResponse
+    {
+    // Validasi password pengguna saat ini
+    $request->validate([
+        'password' => ['required', 'current_password'],
+    ]);
+
+    $user = $request->user();
+
+    // 1. Ubah status menjadi non-aktif (false)
+    $user->is_active = false;
+    $user->save();
+
+    // 2. Logout user dari sistem
+    Auth::logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    // 3. Redirect ke halaman utama
+    return Redirect::to('/')->with('status', 'Akun Anda telah dinonaktifkan.');
+}
 }

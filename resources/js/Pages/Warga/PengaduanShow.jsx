@@ -16,14 +16,14 @@ export default function PengaduanShow() {
     });
 
     // Tentukan path foto
-    const fotoUrl = pengaduan.foto ? `/storage/${pengaduan.foto}` : 'https://via.placeholder.com/600x400/E5E7EB/9CA3AF?text=Tidak+Ada+Foto';
+    const fotoUrl = pengaduan.foto ? `/storage/${pengaduan.foto}` : 'https://via.placeholder.com/600x400/000000/333333?text=Tidak+Ada+Foto';
 
     // Styling untuk status badge
-    let statusBgColor = 'bg-gray-100 text-gray-800'; // Default
-    if (pengaduan.status === 'BARU') statusBgColor = 'bg-blue-100 text-blue-800';
-    if (pengaduan.status === 'DIPROSES_RT') statusBgColor = 'bg-yellow-100 text-yellow-800';
-    if (pengaduan.status === 'SELESAI') statusBgColor = 'bg-green-100 text-green-800';
-    if (pengaduan.status === 'DITOLAK') statusBgColor = 'bg-red-100 text-red-800';
+    let statusStyle = 'bg-gray-500/20 text-gray-300 border-gray-500/50'; // Default
+    if (pengaduan.status === 'BARU') statusStyle = 'bg-blue-500/20 text-blue-300 border-blue-500/50';
+    if (pengaduan.status === 'DIPROSES_RT') statusStyle = 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50';
+    if (pengaduan.status === 'SELESAI') statusStyle = 'bg-green-500/20 text-green-300 border-green-500/50';
+    if (pengaduan.status === 'DITOLAK') statusStyle = 'bg-red-500/20 text-red-300 border-red-500/50';
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -31,74 +31,99 @@ export default function PengaduanShow() {
 
             <div className="py-12">
                 <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
-                    {/* Card Putih untuk membungkus detail */}
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+
+                    {/* Header Breadcrumb-ish */}
+                    <div className="mb-6 flex items-center gap-2 text-sm text-gray-400 px-4 sm:px-0">
+                        <Link href={route('warga.dashboard')} className="hover:text-white transition-colors">Dashboard</Link>
+                        <span>/</span>
+                        <span className="text-white">Detail Laporan</span>
+                    </div>
+
+                    {/* Glass Card untuk membungkus detail */}
+                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 overflow-hidden shadow-2xl sm:rounded-3xl relative">
+                        {/* Status Ribbon (Opsional) */}
+                        <div className="absolute top-0 right-0 p-6 sm:p-8">
+                            <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border ${statusStyle} backdrop-blur-md`}>
+                                {pengaduan.status.replace('_', ' ')}
+                            </span>
+                        </div>
 
                         {/* Header Halaman Detail */}
-                        <div className="p-6 sm:p-8 border-b border-gray-200 dark:border-gray-300">
-                            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-900">
-                                Lacak Proses
+                        <div className="p-6 sm:p-10 border-b border-white/10">
+                            <h2 className="text-3xl font-black text-white pr-20">
+                                {pengaduan.judul}
                             </h2>
-                            <p className="mt-1 text-sm text-gray-900 dark:text-gray-900">
-                                Detail laporan pengaduan Anda.
+                            <p className="mt-2 text-gray-400">
+                                Kode Laporan: <span className="font-mono text-green-400">#{pengaduan.id.toString().padStart(6, '0')}</span>
                             </p>
                         </div>
 
                         {/* Konten Detail */}
-                        <div className="p-6 sm:p-8">
-                            {/* Gambar Laporan */}
-                            <div className="mb-6 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-300">
-                                <img src={fotoUrl} alt={`Foto ${pengaduan.judul}`} className="w-full h-auto object-contain max-h-96 bg-gray-50 dark:bg-gray-300" />
-                            </div>
+                        <div className="p-6 sm:p-10">
 
-                            {/* Detail Teks */}
-                            <div className="space-y-4">
-                                {/* Judul */}
-                                <h3 className="text-2xl font-semibold text-gray-800 dark:text-gray-800">{pengaduan.judul}</h3>
-
-                                {/* Status Badge */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                {/* Kolom Kiri: Gambar */}
                                 <div>
-                                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${statusBgColor}`}>
-                                        Status: {pengaduan.status.replace('_', ' ')}
-                                    </span>
+                                    <div className="rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-black/50 group">
+                                        <img
+                                            src={fotoUrl}
+                                            alt={`Foto ${pengaduan.judul}`}
+                                            className="w-full h-auto object-contain max-h-[500px] transition-transform duration-700 group-hover:scale-105"
+                                        />
+                                    </div>
+                                    <p className="text-center text-xs text-gray-500 mt-2">Bukti Foto Kejadian</p>
                                 </div>
 
-                                {/* Detail Lainnya dalam bentuk list */}
-                                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
-                                    <div className="sm:col-span-1">
-                                        <dt className="font-medium text-gray-700 dark:text-gray-700">Nama Pelapor</dt>
-                                        <dd className="mt-1 text-gray-900 dark:text-gray-500">{pengaduan.nama_pelapor}</dd>
+                                {/* Kolom Kanan: Informasi */}
+                                <div className="space-y-8">
+
+                                    {/* Deskripsi */}
+                                    <div>
+                                        <h3 className="text-lg font-bold text-white mb-3 flex items-center">
+                                            <span className="w-1 h-6 bg-green-500 rounded-full mr-3"></span>
+                                            Deskripsi Laporan
+                                        </h3>
+                                        <div className="bg-white/5 rounded-xl p-5 border border-white/5 text-gray-300 leading-relaxed whitespace-pre-wrap">
+                                            {pengaduan.isi_laporan}
+                                        </div>
                                     </div>
-                                    <div className="sm:col-span-1">
-                                        <dt className="font-medium text-gray-700 dark:text-gray-700">Tanggal Kejadian</dt>
-                                        <dd className="mt-1 text-gray-900 dark:text-gray-500">{formattedTanggalKejadian}</dd>
+
+                                    {/* Detail Grid */}
+                                    <div>
+                                        <h3 className="text-lg font-bold text-white mb-3 flex items-center">
+                                            <span className="w-1 h-6 bg-blue-500 rounded-full mr-3"></span>
+                                            Detail Informasi
+                                        </h3>
+                                        <div className="bg-white/5 rounded-xl border border-white/5 divide-y divide-white/5">
+                                            <div className="p-4 grid grid-cols-2 gap-4">
+                                                <div className="text-sm text-gray-500">Nama Pelapor</div>
+                                                <div className="text-sm text-white font-medium text-right">{pengaduan.nama_pelapor}</div>
+                                            </div>
+                                            <div className="p-4 grid grid-cols-2 gap-4">
+                                                <div className="text-sm text-gray-500">Tanggal Kejadian</div>
+                                                <div className="text-sm text-white font-medium text-right">{formattedTanggalKejadian}</div>
+                                            </div>
+                                            <div className="p-4 grid grid-cols-2 gap-4">
+                                                <div className="text-sm text-gray-500">Tanggal Lapor</div>
+                                                <div className="text-sm text-white font-medium text-right">{formattedTanggalLapor}</div>
+                                            </div>
+                                            <div className="p-4 grid grid-cols-2 gap-4">
+                                                <div className="text-sm text-gray-500">Lokasi</div>
+                                                <div className="text-sm text-white font-medium text-right">{pengaduan.alamat_kejadian}</div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="sm:col-span-1">
-                                        <dt className="font-medium text-gray-700 dark:text-gray-700">No. HP</dt>
-                                        <dd className="mt-1 text-gray-900 dark:text-gray-500">{pengaduan.no_hp || '-'}</dd>
-                                    </div>
-                                    <div className="sm:col-span-1">
-                                        <dt className="font-medium text-gray-700 dark:text-gray-700">Tanggal Lapor</dt>
-                                        <dd className="mt-1 text-gray-900 dark:text-gray-500">{formattedTanggalLapor}</dd>
-                                    </div>
-                                    <div className="sm:col-span-2">
-                                        <dt className="font-medium text-gray-700 dark:text-gray-700">Alamat Kejadian</dt>
-                                        <dd className="mt-1 text-gray-900 dark:text-gray-500">{pengaduan.alamat_kejadian}</dd>
-                                    </div>
-                                    <div className="sm:col-span-2">
-                                        <dt className="font-medium text-gray-700 dark:text-gray-700">Deskripsi</dt>
-                                        <dd className="mt-1 text-gray-900 dark:text-gray-500 whitespace-pre-wrap">{pengaduan.isi_laporan}</dd>
-                                    </div>
-                                </dl>
+
+                                </div>
                             </div>
 
                             {/* Tombol Kembali */}
-                            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-300 text-right">
+                            <div className="mt-10 pt-6 border-t border-white/10 flex justify-end">
                                 <Link
                                     href={route('warga.dashboard')}
-                                    className="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-green-600 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-500"
+                                    className="py-3 px-6 border border-white/10 rounded-xl shadow-lg text-sm font-bold text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all"
                                 >
-                                    Kembali ke Dashboard
+                                    &larr; Kembali ke Dashboard
                                 </Link>
                             </div>
                         </div>

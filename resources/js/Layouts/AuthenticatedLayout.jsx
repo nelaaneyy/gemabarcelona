@@ -22,49 +22,57 @@ export default function AuthenticatedLayout({ header, children }) {
     );
     const UserProfileIcon = () => (
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-    </svg>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+        </svg>
 
     );
     // --- Batas SVG Ikon ---
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-200">
-            {/* --- Navbar Hijau Tua (dari desain baru) --- */}
-            <nav className="bg-green-800 backdrop-blur-md text-white border border-white/20 shadow-xl">
+        <div className="min-h-screen bg-black text-gray-100 relative selection:bg-green-500 selection:text-white">
+
+            {/* GLOBAL BACKGROUND - Fixed to ensure it stays during scroll */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <div className="absolute inset-0 bg-[url('/image/barcelona1.png')] bg-cover bg-center opacity-30 filter blur-sm"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/95 to-black"></div>
+                {/* Green Glow */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-96 bg-green-900/20 blur-[100px] rounded-full"></div>
+            </div>
+
+            {/* --- Navbar Dark Glass --- */}
+            <nav className="sticky top-0 z-50 bg-black/50 backdrop-blur-xl border-b border-white/10 shadow-2xl transition-all">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* Ini adalah div yang error (sekarang sudah diperbaiki) */}
-                    <div className="flex justify-between h-16">
+                    <div className="flex justify-between h-20">
 
                         {/* 1. SISI KIRI (Logo + NavLink Dashboard) */}
                         <div className="flex">
                             {/* Logo GEMA */}
                             <div className="shrink-0 flex items-center">
                                 <Link href="/">
-                                    <h1 className="text-2xl font-bold text-white">GEMA</h1>
+                                    <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600 tracking-wider drop-shadow-sm hover:opacity-80 transition-opacity">GEMA</h1>
                                 </Link>
                             </div>
                         </div>
 
                         {/* 2. SISI KANAN (Ikon Lonceng + Dropdown User) */}
                         <div className="hidden sm:flex sm:items-center sm:ms-6">
-                            {/* Tombol Notifikasi (dari desain baru) */}
+                            {/* Tombol Notifikasi */}
                             <button
                                 type="button"
-                                className="p-2 rounded-full text-white hover:bg-green-700 focus:outline-none"
+                                className="p-2 rounded-full text-gray-400 hover:text-green-400 hover:bg-white/5 transition-all focus:outline-none"
                             >
                                 <span className="sr-only">View notifications</span>
                                 <BellIcon />
                             </button>
 
-                            {/* Dropdown User (Bawaan Breeze) */}
+                            {/* Dropdown User */}
                             <div className="ms-3 relative">
                                 <Dropdown>
                                     <Dropdown.Trigger>
-                                        <span className="inline-flex rounded-md">
+                                        <span className="inline-flex rounded-full">
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                                className="inline-flex items-center px-4 py-2 border border-white/10 rounded-full text-sm font-medium leading-4 text-white bg-white/5 hover:bg-white/10 hover:text-green-300 focus:outline-none transition ease-in-out duration-150 backdrop-blur-sm shadow-lg"
                                             >
                                                 {user.name}
                                                 <svg
@@ -85,8 +93,10 @@ export default function AuthenticatedLayout({ header, children }) {
 
                                     <Dropdown.Content>
                                         <Dropdown.Link href={route('profile.edit')}>
-                                            Profile
-                                            <UserProfileIcon/>
+                                            <div className="flex items-center justify-between">
+                                                Profile
+                                                <UserProfileIcon />
+                                            </div>
                                         </Dropdown.Link>
                                         <Dropdown.Link
                                             href={route('logout')}
@@ -108,8 +118,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                         (previousState) => !previousState,
                                     )
                                 }
-                                // Style disesuaikan agar icon-nya putih
-                                className="inline-flex items-center justify-center rounded-md p-2 text-gray-200 transition duration-150 ease-in-out hover:bg-green-700 hover:text-white focus:bg-green-700 focus:text-white focus:outline-none"
+                                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:text-white hover:bg-white/10 transition duration-150 ease-in-out"
                             >
                                 <svg className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path
@@ -133,31 +142,30 @@ export default function AuthenticatedLayout({ header, children }) {
                 </div>
 
                 {/* Responsive Navigation Menu (Mobile) */}
-                <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
+                <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden bg-black/90 backdrop-blur-xl border-t border-white/10'}>
                     <div className="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
                             href={route('warga.dashboard')}
                             active={route().current('warga.dashboard')}
-                            // Style disesuaikan agar cocok
-                            className="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-200 hover:text-white hover:bg-green-700 hover:border-gray-100"
+                            className="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 hover:border-green-500 transition-all"
                         >
                             Dashboard
                         </ResponsiveNavLink>
                     </div>
 
-                    <div className="border-t border-green-700 pb-1 pt-4">
+                    <div className="border-t border-white/10 pb-1 pt-4">
                         <div className="px-4">
                             <div className="text-base font-medium text-white">
                                 {user.name}
                             </div>
-                            <div className="text-sm font-medium text-gray-300">
+                            <div className="text-sm font-medium text-gray-400">
                                 {user.email}
                             </div>
                         </div>
                         <div className="mt-3 space-y-1">
                             <ResponsiveNavLink
                                 href={route('profile.edit')}
-                                className="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-200 hover:text-white hover:bg-green-700 hover:border-gray-100"
+                                className="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 hover:border-green-500 transition-all"
                             >
                                 Profile
                             </ResponsiveNavLink>
@@ -165,7 +173,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                 method="post"
                                 href={route('logout')}
                                 as="button"
-                                className="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-200 hover:text-white hover:bg-green-700 hover:border-gray-100"
+                                className="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-300 hover:text-white hover:bg-white/10 hover:border-green-500 transition-all"
                             >
                                 Log Out
                             </ResponsiveNavLink>
@@ -174,18 +182,8 @@ export default function AuthenticatedLayout({ header, children }) {
                 </div>
             </nav>
 
-            {/* Header Abu-abu Bawaan Breeze (Opsional, tapi desainmu tidak pakai ini) */}
-            {/* {header && (
-                <header className="bg-white shadow">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        {header}
-                    </div>
-                </header>
-            )}
-            */}
-
             {/* Konten Halaman (children) */}
-            <main>{children}</main>
+            <main className="relative z-10">{children}</main>
         </div>
     );
 }

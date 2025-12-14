@@ -22,20 +22,28 @@ class PengaduanController extends Controller
         $rtUser = Auth::user();
 
         // Ambil data laporan beserta user pembuatnya dan relasi tanggapan
-        // Memuat user: untuk otorisasi RT
-        // Memuat tanggapans.user: untuk menampilkan siapa (RT mana) yang memberi tanggapan
         $laporan->load(['user:id,name,nomor_rt', 'tanggapans.user:id,nomor_rt']);
 
         // Cek apakah nomor RT warga pembuat laporan SAMA dengan nomor RT user RT
         if (!$laporan->user || $laporan->user->nomor_rt !== $rtUser->nomor_rt) {
             abort(403, 'Anda tidak berhak mengakses laporan ini.');
         }
-        // --- BATAS AUTHORIZATION ---
+
+        // =======================================================
+        // >>> LOGIC BARU: UBAH STATUS OTOMATIS SAAT DILIHAT <<<
+        // =======================================================
+        if ($laporan->status === 'BARU') {
+            $laporan->update(['status' => 'DIPROSES_RT']);
+            // Catatan: Ini akan memuat ulang halaman secara otomatis di Inertia
+            // untuk menampilkan status yang baru ('DIPROSES_RT').
+        }
+        // =======================================================
 
         // Render halaman frontend
         return Inertia::render('Rt/PengaduanShowRt', [
-            'pengaduan' => $laporan, // Mengirim data sebagai 'pengaduan' ke frontend
-            'tanggapans' => $laporan->tanggapans, // Mengirimkan relasi tanggapan
+            // Kirim data laporan yang MUNGKIN sudah diperbarui
+            'pengaduan' => $laporan,
+            'tanggapans' => $laporan->tanggapans,
             'auth' => [
                 'user' => Auth::user(),
             ],
@@ -44,6 +52,7 @@ class PengaduanController extends Controller
 
     /**
      * Menangani pembaruan status laporan (dipicu oleh rute PATCH).
+     * Fungsi ini sekarang hanya menangani status 'SELESAI' dan 'DITERUSKAN_LURAH'.
      */
     public function updateStatus(Request $request, Pengaduan $laporan): RedirectResponse
     {
@@ -52,15 +61,21 @@ class PengaduanController extends Controller
         $laporan->load('user:id,nomor_rt');
 
         if (!$laporan->user || $laporan->user->nomor_rt !== $rtUser->nomor_rt) {
-             abort(403, 'Anda tidak berhak mengubah status laporan ini.');
+            // Error ini akan ditangkap oleh Inertia di frontend jika terjadi.
+            return back()->withErrors(['status' => 'Anda tidak berhak mengubah status laporan ini.']);
+        }
+
+        // Cek kondisi status saat ini sebelum diubah
+        if ($laporan->status === 'SELESAI' || $laporan->status === 'DITERUSKAN_LURAH') {
+            return back()->withErrors(['status' => 'Laporan sudah ditutup dan tidak dapat diubah lagi.']);
         }
 
         // 2. Validasi Input Status Baru
         $validated = $request->validate([
             'status' => [
                 'required',
-                // Pastikan status yang dikirim valid sesuai ENUM di database
-                Rule::in(['BARU', 'DIPROSES_RT', 'DITERUSKAN_LURAH', 'SELESAI', 'DITOLAK']),
+                // Batasi status yang boleh di-PATCH HANYA status akhir
+                Rule::in(['SELESAI', 'DITERUSKAN_LURAH']),
             ],
         ]);
 

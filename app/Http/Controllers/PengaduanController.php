@@ -30,16 +30,28 @@ class PengaduanController extends Controller
     public function store(Request $request): RedirectResponse
     {
         // 1. Validasi data
-        $request->validate([
-            'judul' => 'required|string|max:255',
-            'isi_laporan' => 'required|string',
-            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'nama_pelapor' => 'required|string|max:255',
-            'no_hp' => 'nullable|string|max:20',
-            'alamat_kejadian' => 'required|string',
-            'tanggal_kejadian' => 'required|date',
-            'is_urgent' => 'required|boolean',
-        ]);
+    $request->validate([
+        'judul' => 'required|string|max:255',
+        'isi_laporan' => 'required|string',
+        'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240', // Limit increased to 10MB
+        'nama_pelapor' => 'required|string|max:255',
+        'no_hp' => 'nullable|regex:/^[0-9]+$/|max:20',
+        'alamat_kejadian' => 'required|string',
+        'tanggal_kejadian' => 'required|date',
+        'is_urgent' => 'required|boolean',
+    ], [
+        'judul.required' => 'Judul laporan wajib diisi.',
+        'isi_laporan.required' => 'Deskripsi laporan wajib diisi.',
+        'foto.required' => 'Foto bukti wajib dilampirkan.',
+        'foto.image' => 'File yang diunggah harus berupa gambar.',
+        'foto.mimes' => 'Format foto harus jpeg, png, jpg, atau gif.',
+        'foto.max' => 'Ukuran foto maksimal 10MB.',
+        'nama_pelapor.required' => 'Nama pelapor wajib diisi.',
+        'no_hp.regex' => 'Nomor WhatsApp harus berupa angka.',
+        'alamat_kejadian.required' => 'Lokasi kejadian wajib diisi.',
+        'tanggal_kejadian.required' => 'Tanggal kejadian wajib diisi.',
+        'tanggal_kejadian.date' => 'Format tanggal tidak valid.',
+    ]);
 
         // 2. Handle File Upload
         $fotoPath = null;
@@ -97,7 +109,7 @@ class PengaduanController extends Controller
         ]);
 
         // Asumsi: View frontend sudah diganti menjadi PengaduanShowWarga
-        return Inertia::render('Warga/PengaduanShowWarga', [
+        return Inertia::render('Warga/PengaduanShow', [
             'pengaduan' => $pengaduan,
             'tanggapans' => $pengaduan->tanggapans, // Kirim tanggapan publik
             'auth' => [
