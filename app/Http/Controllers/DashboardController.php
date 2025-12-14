@@ -16,7 +16,11 @@ class DashboardController extends Controller
      */
     public function warga(): Response
     {
-        $pengaduans = Auth::user()->pengaduans()->latest()->get();
+        // Tampilkan hanya laporan yang sedang aktif/berjalan
+        $pengaduans = Auth::user()->pengaduans()
+            ->whereIn('status', ['BARU', 'DIPROSES_RT', 'DITERUSKAN_LURAH'])
+            ->latest()
+            ->get();
 
         return Inertia::render('Warga/DashboardWarga', [
             'pengaduans' => $pengaduans,
@@ -32,28 +36,34 @@ class DashboardController extends Controller
     /**
      * Arahkan ke dashboard RT (React).
      */
-    public function rt(): Response
+    public function rt(Request $request): Response
     {
-    // Ambil nomor RT dari user yang sedang login
-    $rtUser = Auth::user();
-    $nomor_rt_user = $rtUser->nomor_rt;
+        // Ambil nomor RT dari user yang sedang login
+        $rtUser = Auth::user();
+        $nomor_rt_user = $rtUser->nomor_rt;
 
-    // Gunakan paginate() untuk konsisten dengan struktur frontend
-    $pengaduans = Pengaduan::whereHas('user', function ($query) use ($nomor_rt_user) {
-        $query->where('role', 'warga')
-              ->where('nomor_rt', $nomor_rt_user);
-    })
-    ->with('user:id,name,nomor_rt')
-    ->latest()
-    ->paginate(10); // <<< KEMBALI KE PAGINATION >>>
+        $query = Pengaduan::whereHas('user', function ($query) use ($nomor_rt_user) {
+            $query->where('role', 'warga')
+                  ->where('nomor_rt', $nomor_rt_user);
+        });
 
-    return Inertia::render('Rt/DashboardRt', [
-        'pengaduans' => $pengaduans,
-        'auth' => [
-            'user' => $rtUser,
-        ],
-    ]);
-    
+        // Filter berdasarkan status jika ada di request
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $pengaduans = $query->with('user:id,name,nomor_rt')
+            ->latest()
+            ->paginate(10)
+            ->withQueryString(); // Pastikan pagination mempertahankan query params
+
+        return Inertia::render('Rt/DashboardRt', [
+            'pengaduans' => $pengaduans,
+            'filters' => $request->only(['status']), // Kirim state filter ke frontend
+            'auth' => [
+                'user' => $rtUser,
+            ],
+        ]);
     }
 
     /**
@@ -86,7 +96,8 @@ class DashboardController extends Controller
             ->first();
 
         // --- 2. Ambil Daftar Laporan (Fokus pada yang 'DITERUSKAN_LURAH' saja) ---
-        $laporansQuery = Pengaduan::where('status', 'DITERUSKAN_LURAH'); // Hanya filter laporan yang diteruskan
+        // --- 2. Ambil Daftar Laporan (DITERUSKAN_LURAH & DIPROSES_LURAH) ---
+        $laporansQuery = Pengaduan::whereIn('status', ['DITERUSKAN_LURAH', 'DIPROSES_LURAH']);
 
         // Jika ada filter kelurahan, terapkan di sini juga
         // if ($lurahUser->nama_kelurahan) {

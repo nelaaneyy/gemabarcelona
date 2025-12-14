@@ -15,11 +15,7 @@ export default function AuthenticatedLayout({ header, children }) {
         useState(false);
 
     // --- SVG Ikon (dari desain baru) ---
-    const BellIcon = () => (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.017 5.454 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-        </svg>
-    );
+
     const UserProfileIcon = () => (
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -57,13 +53,8 @@ export default function AuthenticatedLayout({ header, children }) {
                         {/* 2. SISI KANAN (Ikon Lonceng + Dropdown User) */}
                         <div className="hidden sm:flex sm:items-center sm:ms-6">
                             {/* Tombol Notifikasi */}
-                            <button
-                                type="button"
-                                className="p-2 rounded-full text-gray-400 hover:text-green-400 hover:bg-white/5 transition-all focus:outline-none"
-                            >
-                                <span className="sr-only">View notifications</span>
-                                <BellIcon />
-                            </button>
+                            {/* Tombol Notifikasi (DIHAPUS) */}
+                            {/* <button ... /> */}
 
                             {/* Dropdown User */}
                             <div className="ms-3 relative">
@@ -91,8 +82,11 @@ export default function AuthenticatedLayout({ header, children }) {
                                         </span>
                                     </Dropdown.Trigger>
 
-                                    <Dropdown.Content>
-                                        <Dropdown.Link href={route('profile.edit')}>
+                                    <Dropdown.Content contentClasses="py-1 bg-black/90 backdrop-blur-xl border border-white/10 shadow-xl ring-1 ring-white/5">
+                                        <Dropdown.Link
+                                            href={route('profile.edit')}
+                                            className="text-gray-300 hover:bg-green-500/20 hover:text-green-300 focus:bg-green-500/20 focus:text-green-300 transition-all duration-200"
+                                        >
                                             <div className="flex items-center justify-between">
                                                 Profile
                                                 <UserProfileIcon />
@@ -102,6 +96,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                             href={route('logout')}
                                             method="post"
                                             as="button"
+                                            className="text-gray-300 hover:bg-red-500/20 hover:text-red-300 focus:bg-red-500/20 focus:text-red-300 transition-all duration-200"
                                         >
                                             Log Out
                                         </Dropdown.Link>

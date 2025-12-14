@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             // is_active: default true (aktif)
-            $table->boolean('is_active')->default(true)->after('password');
+            // $table->boolean('is_active')->default(true)->after('password');
+
             // deactivation_reason: alasan jika dinonaktifkan
             $table->text('deactivation_reason')->nullable()->after('is_active');
         });

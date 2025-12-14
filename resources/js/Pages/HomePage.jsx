@@ -3,7 +3,7 @@ import GuestLayout from '@/Layouts/GuestLayout';
 import { SparklesIcon, TruckIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import AboutSection from '@/Components/AboutSection';
 import FeaturesSection from '@/Components/FeaturesSection';
-import FeaturedStartups from '@/Components/FeaturedStartups';
+
 import Footer from '@/Components/Footer';
 import { clsx } from 'clsx';
 
@@ -86,8 +86,7 @@ export default function HomePage() {
             {/* 3. BAGIAN FEATURES */}
             <FeaturesSection />
 
-            {/* 4. BAGIAN FEATURED STARTUPS */}
-            <FeaturedStartups />
+
 
             <Footer />
 

@@ -123,9 +123,10 @@ class PengaduanController extends Controller
      */
     public function riwayat(): Response
     {
-        // KOREKSI: Hapus where('status', 'SELESAI') agar menampilkan SEMUA riwayat
+        // Tampilkan hanya laporan yang sudah selesai atau ditolak
         $pengaduans = Auth::user()
             ->pengaduans()
+            ->whereIn('status', ['SELESAI', 'DITOLAK'])
             ->latest() // Urutkan dari yang terbaru
             ->get();
 

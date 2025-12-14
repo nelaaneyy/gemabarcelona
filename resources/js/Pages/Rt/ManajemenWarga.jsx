@@ -1,11 +1,11 @@
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, useForm, router } from '@inertiajs/react'; // Perbaikan: router diimport dari @inertiajs/react
+import { Head, useForm, router } from '@inertiajs/react';
 import { useState } from 'react';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import InputError from '@/Components/InputError';
 import DangerButton from '@/Components/DangerButton';
-import Modal from '@/Components/Modal'; // Pastikan Anda punya komponen Modal, atau gunakan HeadlessUI Dialog manual
+import Modal from '@/Components/Modal';
 
 export default function ManajemenWarga({ auth, wargas }) {
     const [confirmingUserDeactivation, setConfirmingUserDeactivation] = useState(false);
@@ -39,10 +39,10 @@ export default function ManajemenWarga({ auth, wargas }) {
         });
     };
 
-    // Handler untuk Aktivasi Kembali (Tanpa Modal, langsung konfirmasi alert biasa atau langsung eksekusi)
+    // Handler untuk Aktivasi Kembali
     const activateUser = (user) => {
         if (confirm(`Apakah Anda yakin ingin mengaktifkan kembali akun ${user.name}?`)) {
-            router.post(route('rt.warga.toggle', user.id), { // Perbaikan: Gunakan router.post
+            router.post(route('rt.warga.toggle', user.id), {
                 is_active: true
             });
         }
@@ -52,45 +52,56 @@ export default function ManajemenWarga({ auth, wargas }) {
         <AdminLayout user={auth.user}>
             <Head title="Manajemen Warga" />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-semibold text-gray-800">Daftar Warga RT {auth.user.nomor_rt}</h2>
+            <div className="py-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                    <div className="mb-8">
+                        <h1 className="text-3xl font-black text-white tracking-tight mb-2">
+                            Manajemen Warga
+                        </h1>
+                        <p className="text-gray-400">
+                            Kelola data warga RT {auth.user.nomor_rt} yang terdaftar dalam sistem.
+                        </p>
+                    </div>
+
+                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 overflow-hidden shadow-2xl rounded-3xl">
+                        <div className="p-6 border-b border-white/10 flex justify-between items-center">
+                            <h2 className="text-lg font-bold text-white">Daftar Warga</h2>
+                            {/* Bisa tambah tombol "Tambah Warga" manual jika diperlukan nanti */}
                         </div>
 
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
+                            <table className="min-w-full divide-y divide-white/10">
+                                <thead className="bg-white/5">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email/No HP</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Nama & Alamat</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Kontak</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
+                                        <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
+                                <tbody className="bg-transparent divide-y divide-white/10">
                                     {wargas.map((warga) => (
-                                        <tr key={warga.id}>
+                                        <tr key={warga.id} className="hover:bg-white/5 transition-colors">
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm font-medium text-gray-900">{warga.name}</div>
-                                                <div className="text-sm text-gray-500">Blok/No: {warga.alamat || '-'}</div>
+                                                <div className="text-sm font-bold text-white">{warga.name}</div>
+                                                <div className="text-sm text-gray-400">Blok/No: {warga.alamat || '-'}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-gray-900">{warga.email}</div>
-                                                <div className="text-sm text-gray-500">{warga.no_hp || '-'}</div>
+                                                <div className="text-sm text-gray-300">{warga.email}</div>
+                                                <div className="text-sm text-gray-500 font-mono">{warga.no_hp || '-'}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 {warga.is_active ? (
-                                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                    <span className="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-green-500/20 text-green-300 border border-green-500/30">
                                                         Aktif
                                                     </span>
                                                 ) : (
-                                                    <div className="flex flex-col">
-                                                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 w-fit">
+                                                    <div className="flex flex-col items-start">
+                                                        <span className="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
                                                             Nonaktif
                                                         </span>
-                                                        <span className="text-xs text-red-500 mt-1 italic max-w-xs truncate">
+                                                        <span className="text-xs text-red-400 mt-1 italic max-w-xs truncate">
                                                             "{warga.deactivation_reason}"
                                                         </span>
                                                     </div>
@@ -100,16 +111,16 @@ export default function ManajemenWarga({ auth, wargas }) {
                                                 {warga.is_active ? (
                                                     <button
                                                         onClick={() => confirmDeactivation(warga)}
-                                                        className="text-red-600 hover:text-red-900 font-bold"
+                                                        className="text-red-400 hover:text-red-300 font-bold hover:underline transition-colors"
                                                     >
-                                                        Nonaktifkan Akun
+                                                        Nonaktifkan
                                                     </button>
                                                 ) : (
                                                     <button
                                                         onClick={() => activateUser(warga)}
-                                                        className="text-green-600 hover:text-green-900 font-bold"
+                                                        className="text-green-400 hover:text-green-300 font-bold hover:underline transition-colors"
                                                     >
-                                                        Aktifkan Kembali
+                                                        Aktifkan
                                                     </button>
                                                 )}
                                             </td>
@@ -117,7 +128,7 @@ export default function ManajemenWarga({ auth, wargas }) {
                                     ))}
                                     {wargas.length === 0 && (
                                         <tr>
-                                            <td colSpan="4" className="px-6 py-4 text-center text-gray-500 italic">
+                                            <td colSpan="4" className="px-6 py-12 text-center text-gray-500 italic">
                                                 Belum ada data warga terdaftar.
                                             </td>
                                         </tr>
@@ -132,33 +143,34 @@ export default function ManajemenWarga({ auth, wargas }) {
             {/* Modal Konfirmasi Deaktivasi */}
             <Modal show={confirmingUserDeactivation} onClose={closeModal}>
                 <form onSubmit={deactivateUser} className="p-6">
-                    <h2 className="text-lg font-medium text-gray-900">
-                        Apakah Anda yakin ingin menonaktifkan akun {userToDeactivate?.name}?
+                    <h2 className="text-xl font-bold text-white">
+                        Nonaktifkan Akun Warga
                     </h2>
-
-                    <p className="mt-1 text-sm text-gray-600">
-                        Warga tidak akan bisa login ke aplikasi setelah akun dinonaktifkan.
-                        Silakan masukkan alasan penonaktifan agar warga mengetahui penyebabnya.
+                    <p className="mt-2 text-sm text-gray-300">
+                        Apakah Anda yakin ingin menonaktifkan akun <span className="font-bold text-white">{userToDeactivate?.name}</span>?
+                        Warga tidak akan bisa login setelah akun dinonaktifkan.
                     </p>
 
                     <div className="mt-6">
-                        <label htmlFor="reason" className="block text-sm font-medium text-gray-700">Alasan Penonaktifan</label>
+                        <label htmlFor="reason" className="block text-sm font-medium text-gray-300">Alasan Penonaktifan</label>
                         <textarea
                             id="reason"
-                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            className="mt-2 block w-full bg-black/50 border border-white/10 rounded-xl shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm text-white placeholder-gray-500 p-3"
                             rows="3"
                             value={data.reason}
                             onChange={(e) => setData('reason', e.target.value)}
-                            placeholder="Contoh: Pindah domisili, Tidak membayar iuran 3 bulan berturut-turut, dll."
+                            placeholder="Contoh: Pindah domisili, Tidak membayar iuran..."
                             required
                         ></textarea>
                         <InputError message={errors.reason} className="mt-2" />
                     </div>
 
-                    <div className="mt-6 flex justify-end">
-                        <SecondaryButton onClick={closeModal}>Batal</SecondaryButton>
+                    <div className="mt-6 flex justify-end space-x-3">
+                        <SecondaryButton onClick={closeModal} className="bg-white/10 text-white hover:bg-white/20 border-none">
+                            Batal
+                        </SecondaryButton>
 
-                        <DangerButton className="ml-3" disabled={processing}>
+                        <DangerButton className="bg-red-600 hover:bg-red-500 border-none" disabled={processing}>
                             Nonaktifkan Akun
                         </DangerButton>
                     </div>

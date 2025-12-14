@@ -1,32 +1,31 @@
 // src/components/Footer.jsx
 import { EnvelopeIcon, MapPinIcon, PhoneIcon } from '@heroicons/react/24/outline';
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
-const navigation = {
-    solution: [
-        { name: 'Jelajahi Layanan', href: '#' },
-        { name: 'Panduan Warga', href: '#' },
-        { name: 'FAQ & Bantuan', href: '#' },
-    ],
-    support: [
-        { name: 'Pusat Bantuan', href: '#' },
-        { name: 'Hubungi Kami', href: '#' },
-        { name: 'Kebijakan Privasi', href: '#' },
-    ],
-    company: [
-        { name: 'Tentang GEMA', href: '#' },
-        { name: 'Tim Pengurus', href: '#' },
-        { name: 'Karir (RT/Lurah)', href: '#' },
-    ],
-    social: [
-        { name: 'Facebook', href: '#', icon: FaFacebook },
-        { name: 'Twitter', href: '#', icon: FaTwitter },
-        { name: 'Instagram', href: '#', icon: FaInstagram },
-        { name: 'LinkedIn', href: '#', icon: FaLinkedin },
-    ],
-};
+import { Link } from '@inertiajs/react';
 
 export default function Footer() {
+
+    // We define navigation inside the component to ensure route() is available if needed,
+    // although strictly speaking strictly route() is usually global.
+    const navigation = {
+        solution: [
+            { name: 'Jelajahi Layanan', href: route('layanan') },
+            { name: 'Panduan Warga', href: route('layanan') },
+            // { name: 'FAQ & Bantuan', href: route('layanan') },
+        ],
+        support: [
+            { name: 'Pusat Bantuan', href: route('tentang-kami') },
+            { name: 'Hubungi Kami', href: route('tentang-kami') },
+            { name: 'Kebijakan Privasi', href: '#' },
+        ],
+        company: [
+            { name: 'Tentang GEMA', href: route('tentang-kami') },
+            { name: 'Tim Pengurus', href: route('tentang-kami') },
+            // { name: 'Karir (RT/Lurah)', href: '#' },
+        ],
+
+    };
+
     return (
         // Menggunakan warna latar belakang yang gelap atau netral
         <footer className="bg-neutral-900" aria-labelledby="footer-heading">
@@ -40,14 +39,7 @@ export default function Footer() {
                         <p className="text-sm leading-6 text-gray-400">
                             Gerakan Masyarakat Melaporkan Infrastruktur. Platform untuk penanganan aduan infrastruktur di Perumahan Barcelona Jambi.
                         </p>
-                        <div className="flex space-x-6">
-                            {navigation.social.map((item) => (
-                                <a key={item.name} href={item.href} className="text-gray-400 hover:text-white transition duration-150">
-                                    <span className="sr-only">{item.name}</span>
-                                    <item.icon className="h-6 w-6" aria-hidden="true" />
-                                </a>
-                            ))}
-                        </div>
+
                     </div>
 
                     {/* Kolom 2 & 3: Navigasi Tautan */}
@@ -58,9 +50,9 @@ export default function Footer() {
                                 <ul role="list" className="mt-6 space-y-4">
                                     {navigation.solution.map((item) => (
                                         <li key={item.name}>
-                                            <a href={item.href} className="text-sm leading-6 text-gray-400 hover:text-white transition duration-150">
+                                            <Link href={item.href} className="text-sm leading-6 text-gray-400 hover:text-white transition duration-150">
                                                 {item.name}
-                                            </a>
+                                            </Link>
                                         </li>
                                     ))}
                                 </ul>
@@ -70,9 +62,9 @@ export default function Footer() {
                                 <ul role="list" className="mt-6 space-y-4">
                                     {navigation.support.map((item) => (
                                         <li key={item.name}>
-                                            <a href={item.href} className="text-sm leading-6 text-gray-400 hover:text-white transition duration-150">
+                                            <Link href={item.href} className="text-sm leading-6 text-gray-400 hover:text-white transition duration-150">
                                                 {item.name}
-                                            </a>
+                                            </Link>
                                         </li>
                                     ))}
                                 </ul>
@@ -86,9 +78,9 @@ export default function Footer() {
                                 <ul role="list" className="mt-6 space-y-4">
                                     {navigation.company.map((item) => (
                                         <li key={item.name}>
-                                            <a href={item.href} className="text-sm leading-6 text-gray-400 hover:text-white transition duration-150">
+                                            <Link href={item.href} className="text-sm leading-6 text-gray-400 hover:text-white transition duration-150">
                                                 {item.name}
-                                            </a>
+                                            </Link>
                                         </li>
                                     ))}
                                 </ul>

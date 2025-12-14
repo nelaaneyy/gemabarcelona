@@ -21,7 +21,8 @@ class User extends Authenticatable
         'nama_kelurahan',
         'alamat',
         'nomor_ktp',
-        'is_active'
+        'is_active',
+        'deactivation_reason',
     ];
 
     protected $hidden = [
@@ -44,5 +45,13 @@ class User extends Authenticatable
 
     public function tanggapans() {
     return $this->hasMany(Tanggapan::class);
+    }
+
+    /**
+     * Check if user has a specific role
+     */
+    public function hasRole($role)
+    {
+        return $this->role === $role;
     }
 }

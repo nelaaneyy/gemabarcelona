@@ -94,6 +94,13 @@ Route::middleware('auth')->group(function () {
             Route::post('/pengaduan/{pengaduan}/tanggapan', [LurahPengaduanController::class, 'storeTanggapan'])->name('pengaduan.tanggapan.store');
         });
 
+
+        // --- REKAPITULASI (RT & Lurah) ---
+        Route::middleware('role:rt,lurah')->prefix('rekapitulasi')->name('rekapitulasi.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\RekapitulasiController::class, 'index'])->name('index');
+            Route::get('/cetak', [\App\Http\Controllers\RekapitulasiController::class, 'cetak'])->name('cetak');
+        });
+
     });
 });
 
