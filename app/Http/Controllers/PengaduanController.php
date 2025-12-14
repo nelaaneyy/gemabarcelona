@@ -53,10 +53,13 @@ class PengaduanController extends Controller
         'tanggal_kejadian.date' => 'Format tanggal tidak valid.',
     ]);
 
-        // 2. Handle File Upload
+        // 2. Handle File Upload (Cloudinary)
         $fotoPath = null;
         if ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('pengaduan', 'public');
+            // Upload to Cloudinary folder 'pengaduan'
+            $result = $request->file('foto')->storeOnCloudinary('pengaduan');
+            // Get the secure URL of the uploaded file
+            $fotoPath = $result->getSecurePath();
         }
 
         // 3. Simpan ke Database

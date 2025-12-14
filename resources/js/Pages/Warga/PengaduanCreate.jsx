@@ -6,6 +6,7 @@ import TextInput from '@/Components/TextInput';
 import { Head, useForm, Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { Switch } from '@headlessui/react';
+import UploadFoto from '@/Components/UploadFoto';
 
 // --- Ikon Kamera ---
 const CameraIconMini = () => (
@@ -82,29 +83,14 @@ export default function PengaduanCreate() {
                                         <div className={labelStyle}>
                                             Lampirkan Foto Bukti <span className="text-red-500">*</span>
                                         </div>
-                                        <div className="aspect-[4/5] w-full bg-white/5 rounded-2xl flex items-center justify-center border-2 border-dashed border-white/20 relative overflow-hidden group hover:border-green-400/50 hover:bg-white/10 transition-all cursor-pointer">
-                                            {photoPreview ? (
-                                                <div className="relative w-full h-full">
-                                                    <img src={photoPreview} alt="Preview" className="object-cover w-full h-full" />
-                                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <span className="text-white font-medium bg-black/50 px-4 py-2 rounded-full backdrop-blur-sm">Ganti Foto</span>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-                                                    <div className="mb-4 bg-white/5 p-4 rounded-full group-hover:scale-110 transition-transform duration-300">
-                                                        <CameraIconMini />
-                                                    </div>
-                                                    <p className="text-sm text-gray-300 font-medium">Klik untuk unggah foto</p>
-                                                    <p className="mt-1 text-xs text-gray-500">JPG, PNG, max 5MB</p>
-                                                </div>
-                                            )}
-                                            <input
-                                                id="foto" type="file"
-                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                                onChange={handlePhotoChange} accept="image/*"
-                                            />
-                                        </div>
+
+                                        <UploadFoto
+                                            onFileSelect={(file) => setData('foto', file)}
+                                            error={errors.foto}
+                                            currentImage={photoPreview} // If you want to show preview if editing
+                                        />
+
+                                        {/* Progress Bar */}
                                         {/* Progress Bar */}
                                         {progress && (
                                             <div className="w-full bg-white/10 rounded-full h-1.5 mt-2 overflow-hidden">
