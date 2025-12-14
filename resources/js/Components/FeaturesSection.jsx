@@ -73,7 +73,7 @@ export default function FeaturesSection() {
                             <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
 
                             <img
-                                src="https://placehold.co/600x400/18181b/FFFFFF?text=Dashboard+Dark+Mode"
+                                src="/image/rusak.jpg"
                                 alt="Dashboard Statistik Pengaduan"
                                 className="w-full h-full object-cover relative z-10"
                             />

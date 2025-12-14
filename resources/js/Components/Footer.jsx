@@ -16,12 +16,10 @@ export default function Footer() {
         support: [
             { name: 'Pusat Bantuan', href: route('tentang-kami') },
             { name: 'Hubungi Kami', href: route('tentang-kami') },
-            { name: 'Kebijakan Privasi', href: '#' },
         ],
         company: [
             { name: 'Tentang GEMA', href: route('tentang-kami') },
             { name: 'Tim Pengurus', href: route('tentang-kami') },
-            // { name: 'Karir (RT/Lurah)', href: '#' },
         ],
 
     };
@@ -90,15 +88,7 @@ export default function Footer() {
                                 <ul role="list" className="mt-6 space-y-4 text-sm leading-6 text-gray-400">
                                     <li className="flex items-start space-x-2">
                                         <MapPinIcon className="h-5 w-5 flex-shrink-0 text-gray-500 mt-1" />
-                                        <span>Perumahan Barcelona, Jambi</span>
-                                    </li>
-                                    <li className="flex items-start space-x-2">
-                                        <EnvelopeIcon className="h-5 w-5 flex-shrink-0 text-gray-500 mt-1" />
-                                        <span>contact@gema.id</span>
-                                    </li>
-                                    <li className="flex items-start space-x-2">
-                                        <PhoneIcon className="h-5 w-5 flex-shrink-0 text-gray-500 mt-1" />
-                                        <span>+62 812 XXXX XXXX</span>
+                                        <span>Perumahan Barcelona, Mayang Mangurai, Kec. Kota Baru, Kota Jambi, Jambi</span>
                                     </li>
                                 </ul>
                             </div>
@@ -108,7 +98,7 @@ export default function Footer() {
 
                 {/* Copyright */}
                 <div className="mt-16 border-t border-gray-800 pt-8 sm:mt-20 lg:mt-24">
-                    <p className="text-xs leading-5 text-gray-400">&copy; {new Date().getFullYear()} GEMA. All rights reserved. Built for Barcelona Jambi Community.</p>
+                    <p className="text-xs leading-5 text-gray-400">&copy; {new Date().getFullYear()} GEMA. All rights reserved. Built for Barcelona Regency Jambi City.</p>
                 </div>
             </div>
         </footer>

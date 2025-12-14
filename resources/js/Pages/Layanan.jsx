@@ -1,4 +1,5 @@
 import GuestLayout from '@/Layouts/GuestLayout';
+import { Head } from '@inertiajs/react';
 import Footer from '@/Components/Footer';
 import {
     WrenchScrewdriverIcon,
@@ -60,6 +61,7 @@ const steps = [
 export default function Layanan() {
     return (
         <GuestLayout navbarTheme="dark">
+            <Head title="Layanan" />
             <div className="bg-black min-h-screen">
                 {/* HERO SECTION */}
                 <div className="relative isolate pt-24 overflow-hidden">

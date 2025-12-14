@@ -1,5 +1,6 @@
 // src/pages/TentangKami.jsx
 import GuestLayout from '@/Layouts/GuestLayout';
+import { Head } from '@inertiajs/react';
 import Footer from '@/Components/Footer';
 import { UserGroupIcon, BuildingOffice2Icon, MegaphoneIcon } from '@heroicons/react/24/outline';
 
@@ -8,10 +9,9 @@ export default function TentangKami() {
 
     return (
         <GuestLayout navbarTheme="dark">
-            {/* HERO - Dark Premium Style matching Homepage */}
+            <Head title="Tentang Kami" />
             <div className="relative min-h-[50vh] pt-16 flex items-center justify-center overflow-hidden bg-black">
 
-                {/* Background Image & Overlay */}
                 <div
                     className="absolute inset-0 z-0 opacity-70 transform scale-105 transition-transform duration-[20s] ease-linear animate-slow-zoom"
                     style={{
@@ -36,7 +36,7 @@ export default function TentangKami() {
                         Mengenal <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-300">GEMA</span> Lebih Dekat
                     </h1>
                     <p className="mt-4 text-lg text-green-50/80 max-w-xl drop-shadow-md font-light tracking-wide">
-                        Gerakan Masyarakat Melaporkan Infrastruktur: Sebuah inisiatif warga untuk lingkungan yang lebih baik dan transparan.
+                        Gerakan Masyarakat Melaporkan Infrastruktur adalah Sebuah platform inisiatif warga untuk melaporkan infrastruktur yang rusak dan memantau status perbaikan infrastruktur yang dilaporkan.
                     </p>
                 </div>
 

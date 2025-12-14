@@ -1,5 +1,6 @@
 // src/pages/HomePage.jsx
 import GuestLayout from '@/Layouts/GuestLayout';
+import { Head } from '@inertiajs/react';
 import { SparklesIcon, TruckIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import AboutSection from '@/Components/AboutSection';
 import FeaturesSection from '@/Components/FeaturesSection';
@@ -8,10 +9,8 @@ import Footer from '@/Components/Footer';
 import { clsx } from 'clsx';
 
 export default function HomePage() {
-    // 🔑 Pastikan 'perumahan.jpg' ada di folder public/image/
     const heroImageUrl = '/image/perumahan.jpg';
 
-    // Konten feature di bagian bawah
     const features = [
         { icon: SparklesIcon, text: 'Pengaduan Perbaikan Jalan' },
         { icon: TruckIcon, text: 'Pengaduan Listrik Mati' },
@@ -21,10 +20,9 @@ export default function HomePage() {
     return (
         <GuestLayout navbarTheme="dark">
 
-            {/* 1. BAGIAN HERO UTAMA (Full Screen, Dark Premium Theme) */}
+            <Head title="Beranda" />
             <div className="relative min-h-screen pt-16 overflow-hidden bg-black">
 
-                {/* Background Image & Overlay - Matching Login/Register */}
                 <div
                     className="absolute inset-0 z-0 opacity-70 transform scale-105 transition-transform duration-[20s] ease-linear animate-slow-zoom"
                     style={{
@@ -85,6 +83,9 @@ export default function HomePage() {
 
             {/* 3. BAGIAN FEATURES */}
             <FeaturesSection />
+
+            {/* 3. BAGIAN FEATURES */}
+
 
 
 
