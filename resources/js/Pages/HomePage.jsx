@@ -76,7 +76,7 @@ export default function HomePage() {
                         transition={{ duration: 0.6, delay: 0.8 }}
                         className="mt-12 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6"
                     >
-                        <a href="#" className="flex items-center justify-center bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white px-8 py-4 rounded-full text-lg font-bold shadow-lg shadow-green-900/50 transition-all duration-300 transform hover:-translate-y-1">
+                        <a href={route('layanan')} className="flex items-center justify-center bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white px-8 py-4 rounded-full text-lg font-bold shadow-lg shadow-green-900/50 transition-all duration-300 transform hover:-translate-y-1">
                             Jelajahi Layanan
                         </a>
                         <a href={route('register')} className="flex items-center justify-center bg-white/10 hover:bg-white/20 border border-white/30 text-white px-8 py-4 rounded-full text-lg font-semibold backdrop-blur-md shadow-lg transition-all duration-300 transform hover:-translate-y-1">
