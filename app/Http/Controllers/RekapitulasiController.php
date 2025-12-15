@@ -20,11 +20,18 @@ class RekapitulasiController extends Controller
         $query = Pengaduan::where('status', 'SELESAI')
             ->with(['user']);
 
-        // Jika user adalah RT, filter berdasarkan nomor RT user pelapor (user)
+        // Jika user adalah RT
         if ($user->hasRole('rt')) {
-            $query->whereHas('user', function ($q) use ($user) {
-                $q->where('nomor_rt', $user->nomor_rt);
-            });
+            // Jika RT punya nomor_rt, ambil data warga di RT tersebut
+            if ($user->nomor_rt) {
+                $query->whereHas('user', function ($q) use ($user) {
+                    $q->where('nomor_rt', $user->nomor_rt);
+                });
+            } else {
+                // Jika RT tidak punya nomor_rt (misal data admin/seeder belum lengkap),
+                // Jangan tampilkan data apapun agar tidak bocor data seluruh kelurahan
+                $query->whereRaw('1 = 0');
+            }
         }
         // Jika Lurah, tampilkan semua (tidak perlu filter tambahan)
 
@@ -47,9 +54,13 @@ class RekapitulasiController extends Controller
 
         // Filter sama seperti index
         if ($user->hasRole('rt')) {
-            $query->whereHas('user', function ($q) use ($user) {
-                $q->where('nomor_rt', $user->nomor_rt);
-            });
+             if ($user->nomor_rt) {
+                $query->whereHas('user', function ($q) use ($user) {
+                    $q->where('nomor_rt', $user->nomor_rt);
+                });
+            } else {
+                $query->whereRaw('1 = 0');
+            }
         }
 
         $pengaduans = $query->latest()->get();
