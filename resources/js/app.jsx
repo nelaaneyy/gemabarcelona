@@ -6,7 +6,6 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 import React from 'react';
 import { AnimatePresence } from 'framer-motion';
-import LoadingScreen from './Components/LoadingScreen';
 import PageTransition from './Components/PageTransition';
 
 
@@ -23,26 +22,12 @@ createInertiaApp({
         const root = createRoot(el);
 
         function AnimatedApp({ App, props }) {
-            const [isLoading, setIsLoading] = React.useState(true);
-
-            React.useEffect(() => {
-                const timer = setTimeout(() => setIsLoading(false), 2000);
-                return () => clearTimeout(timer);
-            }, []);
-
             return (
-                <>
-                    <AnimatePresence mode="wait">
-                        {isLoading && <LoadingScreen key="loading" />}
-                    </AnimatePresence>
-                    {!isLoading && (
-                        <AnimatePresence mode="wait" initial={false}>
-                            <PageTransition key={props.initialPage.url}>
-                                <App {...props} />
-                            </PageTransition>
-                        </AnimatePresence>
-                    )}
-                </>
+                <AnimatePresence mode="wait" initial={false}>
+                    <PageTransition key={props.initialPage.url}>
+                        <App {...props} />
+                    </PageTransition>
+                </AnimatePresence>
             );
         }
 
