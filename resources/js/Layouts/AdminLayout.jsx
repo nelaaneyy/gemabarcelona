@@ -9,6 +9,7 @@ import {
     XMarkIcon
 } from '@heroicons/react/24/outline';
 import Dropdown from '@/Components/Dropdown';
+import ScrollReveal from '@/Components/ScrollReveal';
 import { AnimatePresence } from 'framer-motion';
 import PageTransition from '@/Components/PageTransition';
 
@@ -32,6 +33,16 @@ export default function AdminLayout({ children }) {
     const { auth } = usePage().props;
     const user = auth?.user;
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    // Set body background to black to match Admin theme
+    useEffect(() => {
+        document.body.style.background = 'black';
+        document.body.style.color = 'white';
+        return () => {
+            document.body.style.background = '';
+            document.body.style.color = '';
+        };
+    }, []);
 
     // Set body background to black to match Admin theme
     useEffect(() => {
@@ -115,7 +126,9 @@ export default function AdminLayout({ children }) {
                 <main className="flex-1 relative overflow-y-auto focus:outline-none custom-scrollbar p-6 sm:p-8">
                     <AnimatePresence mode="wait">
                         <PageTransition key={usePage().url}>
-                            {children}
+                            <ScrollReveal>
+                                {children}
+                            </ScrollReveal>
                         </PageTransition>
                     </AnimatePresence>
                 </main>

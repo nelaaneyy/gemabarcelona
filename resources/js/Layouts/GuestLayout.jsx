@@ -1,5 +1,6 @@
 // Ganti path import Navbar jika lokasi file Anda berbeda
 import Navbar from '@/Components/Navbar';
+import ScrollReveal from '@/Components/ScrollReveal';
 import React from 'react';
 import { usePage } from '@inertiajs/react';
 import { AnimatePresence } from 'framer-motion';
@@ -28,7 +29,9 @@ export default function GuestLayout({ children, navbarTheme = 'light' }) {
             <main>
                 <AnimatePresence mode="wait">
                     <PageTransition key={usePage().url}>
-                        {children}
+                        <ScrollReveal>
+                            {children}
+                        </ScrollReveal>
                     </PageTransition>
                 </AnimatePresence>
             </main>

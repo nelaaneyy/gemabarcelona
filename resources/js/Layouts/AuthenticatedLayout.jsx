@@ -205,7 +205,9 @@ export default function AuthenticatedLayout({ header, children }) {
             <main className="relative z-10">
                 <AnimatePresence mode="wait">
                     <PageTransition key={usePage().url}>
-                        {children}
+                        <ScrollReveal>
+                            {children}
+                        </ScrollReveal>
                     </PageTransition>
                 </AnimatePresence>
             </main>
