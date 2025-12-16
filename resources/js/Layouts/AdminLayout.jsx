@@ -9,7 +9,8 @@ import {
     XMarkIcon
 } from '@heroicons/react/24/outline';
 import Dropdown from '@/Components/Dropdown';
-import ScrollReveal from '@/Components/ScrollReveal';
+import { AnimatePresence } from 'framer-motion';
+import PageTransition from '@/Components/PageTransition';
 
 // --- Komponen NavLink Samping (untuk Sidebar) ---
 const SidebarNavLink = ({ href, active, children, icon: Icon }) => (
@@ -34,14 +35,12 @@ export default function AdminLayout({ children }) {
 
     return (
         <div className="min-h-screen flex bg-black">
-            {/* GLOBAL BACKGROUND - Fixed */}
             <div className="fixed inset-0 z-0 pointer-events-none">
                 <div className="absolute inset-0 bg-[url('/image/barcelona1.png')] bg-cover bg-center opacity-20 filter blur-sm"></div>
                 <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/95 to-black"></div>
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-green-900/20 blur-[100px] rounded-full"></div>
             </div>
 
-            {/* === Sidebar Mobile (Overlay) === */}
             <div className={`fixed inset-0 z-50 flex md:hidden ${sidebarOpen ? 'block' : 'hidden'}`} role="dialog" aria-modal="true">
                 <div className="fixed inset-0 bg-black/90 backdrop-blur-sm transition-opacity" onClick={() => setSidebarOpen(false)}></div>
                 <div className="relative flex-1 flex flex-col max-w-xs w-full bg-black border-r border-white/10">
@@ -55,12 +54,10 @@ export default function AdminLayout({ children }) {
                             <XMarkIcon className="h-6 w-6 text-white" />
                         </button>
                     </div>
-                    {/* Isi Sidebar Mobile sama dengan Desktop */}
                     <SidebarContent user={user} />
                 </div>
             </div>
 
-            {/* === Sidebar Desktop === */}
             <div className="hidden md:flex md:shrink-0 relative z-10">
                 <div className="flex flex-col w-72">
                     <div className="flex flex-col grow bg-black/40 backdrop-blur-xl border-r border-white/10 pt-5 pb-4 overflow-y-auto">
@@ -96,9 +93,11 @@ export default function AdminLayout({ children }) {
                 </div>
 
                 <main className="flex-1 relative overflow-y-auto focus:outline-none custom-scrollbar p-6 sm:p-8">
-                    <ScrollReveal>
-                        {children}
-                    </ScrollReveal>
+                    <AnimatePresence mode="wait">
+                        <PageTransition key={usePage().url}>
+                            {children}
+                        </PageTransition>
+                    </AnimatePresence>
                 </main>
             </div>
         </div>
