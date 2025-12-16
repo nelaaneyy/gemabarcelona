@@ -1,6 +1,5 @@
 // Ganti path import Navbar jika lokasi file Anda berbeda
 import Navbar from '@/Components/Navbar';
-import ScrollReveal from '@/Components/ScrollReveal';
 import { usePage } from '@inertiajs/react';
 
 export default function GuestLayout({ children, navbarTheme = 'light' }) {
@@ -14,9 +13,7 @@ export default function GuestLayout({ children, navbarTheme = 'light' }) {
             <Navbar theme={navbarTheme} />
 
             <main>
-                <ScrollReveal>
-                    {children}
-                </ScrollReveal>
+                {children}
             </main>
 
             <footer />
