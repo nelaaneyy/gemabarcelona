@@ -7,6 +7,7 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import ScrollReveal from '@/Components/ScrollReveal';
 export default function AuthenticatedLayout({ header, children }) {
     // Mengambil user dari usePage() (Bawaan Breeze)
     const user = usePage().props.auth.user;
@@ -178,7 +179,11 @@ export default function AuthenticatedLayout({ header, children }) {
             </nav>
 
             {/* Konten Halaman (children) */}
-            <main className="relative z-10">{children}</main>
+            <main className="relative z-10">
+                <ScrollReveal>
+                    {children}
+                </ScrollReveal>
+            </main>
         </div>
     );
 }

@@ -1,5 +1,6 @@
 // Ganti path import Navbar jika lokasi file Anda berbeda
 import Navbar from '@/Components/Navbar';
+import ScrollReveal from '@/Components/ScrollReveal';
 
 export default function GuestLayout({ children, navbarTheme = 'light' }) {
     const backgroundStyle = {
@@ -12,7 +13,9 @@ export default function GuestLayout({ children, navbarTheme = 'light' }) {
             <Navbar theme={navbarTheme} />
 
             <main>
-                {children}
+                <ScrollReveal>
+                    {children}
+                </ScrollReveal>
             </main>
 
             <footer />
