@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
     HomeIcon,
@@ -33,36 +33,6 @@ export default function AdminLayout({ children }) {
     const { auth } = usePage().props;
     const user = auth?.user;
     const [sidebarOpen, setSidebarOpen] = useState(false);
-
-    // Set body background to black to match Admin theme
-    useEffect(() => {
-        document.body.style.background = 'black';
-        document.body.style.color = 'white';
-        return () => {
-            document.body.style.background = '';
-            document.body.style.color = '';
-        };
-    }, []);
-
-    // Set body background to black to match Admin theme
-    useEffect(() => {
-        document.body.style.background = 'black';
-        document.body.style.color = 'white';
-        return () => {
-            document.body.style.background = '';
-            document.body.style.color = '';
-        };
-    }, []);
-
-    // Set body background to black to match Admin theme
-    useState(() => {
-        document.body.style.background = 'black';
-        document.body.style.color = 'white';
-        return () => {
-            document.body.style.background = '';
-            document.body.style.color = '';
-        };
-    }, []);
 
     return (
         <div className="min-h-screen flex bg-black">

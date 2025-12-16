@@ -6,7 +6,7 @@ import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import PageTransition from '@/Components/PageTransition';
 export default function AuthenticatedLayout({ header, children }) {
@@ -15,27 +15,6 @@ export default function AuthenticatedLayout({ header, children }) {
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
-
-    useEffect(() => {
-        document.body.style.background = 'black';
-        document.body.style.color = 'white';
-        return () => {
-            document.body.style.background = '';
-            document.body.style.color = '';
-        };
-    }, []);
-
-    // Set body background to black to match Auth theme
-    useState(() => { // Using useState initializer for once-run or useEffect. Ideally useEffect.
-        // Wait, the prompt said useEffect. Let's use useEffect.
-    }, []);
-    // Correcting to useEffect below in replacement content
-    useState(() => { }, []);
-    // Actually I will simply use useEffect.
-    const { useEffect } = require('react'); // Wait this is ESM.
-
-    // I need to make sure I import useEffect or use React.useEffect.
-    // The previous file imports `useState` from 'react'. I should add `useEffect`.
 
 
     // --- SVG Ikon (dari desain baru) ---
