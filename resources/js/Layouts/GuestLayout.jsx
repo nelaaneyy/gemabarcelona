@@ -2,8 +2,6 @@
 import Navbar from '@/Components/Navbar';
 import ScrollReveal from '@/Components/ScrollReveal';
 import { usePage } from '@inertiajs/react';
-import { AnimatePresence } from 'framer-motion';
-import PageTransition from '@/Components/PageTransition';
 
 export default function GuestLayout({ children, navbarTheme = 'light' }) {
     const backgroundStyle = {
@@ -16,13 +14,9 @@ export default function GuestLayout({ children, navbarTheme = 'light' }) {
             <Navbar theme={navbarTheme} />
 
             <main>
-                <AnimatePresence mode="wait">
-                    <PageTransition key={usePage().url}>
-                        <ScrollReveal>
-                            {children}
-                        </ScrollReveal>
-                    </PageTransition>
-                </AnimatePresence>
+                <ScrollReveal>
+                    {children}
+                </ScrollReveal>
             </main>
 
             <footer />

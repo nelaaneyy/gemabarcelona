@@ -10,8 +10,6 @@ import {
 } from '@heroicons/react/24/outline';
 import Dropdown from '@/Components/Dropdown';
 import ScrollReveal from '@/Components/ScrollReveal';
-import { AnimatePresence } from 'framer-motion';
-import PageTransition from '@/Components/PageTransition';
 
 // --- Komponen NavLink Samping (untuk Sidebar) ---
 const SidebarNavLink = ({ href, active, children, icon: Icon }) => (
@@ -94,13 +92,9 @@ export default function AdminLayout({ children }) {
                 </div>
 
                 <main className="flex-1 relative overflow-y-auto focus:outline-none custom-scrollbar p-6 sm:p-8">
-                    <AnimatePresence mode="wait">
-                        <PageTransition key={usePage().url}>
-                            <ScrollReveal>
-                                {children}
-                            </ScrollReveal>
-                        </PageTransition>
-                    </AnimatePresence>
+                    <ScrollReveal>
+                        {children}
+                    </ScrollReveal>
                 </main>
             </div>
         </div>
