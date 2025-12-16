@@ -119,15 +119,7 @@ export default function PengaduanShow() {
                                 </div>
                             </div>
 
-                            {/* Tombol Kembali */}
-                            <div className="mt-10 pt-6 border-t border-white/10 flex justify-end">
-                                <Link
-                                    href={route('warga.dashboard')}
-                                    className="py-3 px-6 border border-white/10 rounded-xl shadow-lg text-sm font-bold text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all"
-                                >
-                                    &larr; Kembali ke Dashboard
-                                </Link>
-                            </div>
+
                         </div>
                     </div>
 
