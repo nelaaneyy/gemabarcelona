@@ -126,6 +126,11 @@ export default function PengaduanShowRt({ auth, pengaduan, tanggapans }) {
                             <div className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border ${statusStyle} backdrop-blur-md shadow-lg`}>
                                 {pengaduan.status.replace('_', ' ')}
                             </div>
+                            {pengaduan.is_urgent && (
+                                <div className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border bg-red-500/20 text-red-300 border-red-500/50 backdrop-blur-md shadow-lg animate-pulse">
+                                    Mendesak
+                                </div>
+                            )}
                         </div>
 
                         <div className="p-6 sm:p-8">

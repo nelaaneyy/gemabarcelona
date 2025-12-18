@@ -57,6 +57,11 @@ const LaporanCardRt = ({ laporan }) => {
                         <span className={`font-bold ml-2 px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wider ${getStatusStyles(laporan.status)}`}>
                             {laporan.status.replace('_', ' ')}
                         </span>
+                        {laporan.is_urgent && (
+                            <span className="font-bold ml-2 px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-wider bg-red-500/20 text-red-300 border border-red-500/30 animate-pulse">
+                                Mendesak
+                            </span>
+                        )}
                     </p>
                 </div>
 
